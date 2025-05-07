@@ -20,37 +20,29 @@ We apply this framework to ten clinically motivated adversarial scenarios, rangi
 
 ```
 VSF-Med/
-├── src/                         # Source code
-│   ├── config/                  # Configuration files
-│   │   └── default_config.yaml  # Default configuration
-│   ├── data/                    # Data processing utilities
-│   │   ├── raw/                 # Scripts for raw data processing
-│   │   └── processed/           # Scripts for processed data
-│   ├── models/                  # Model implementations
-│   │   ├── evaluation/          # Evaluation and scoring models
-│   │   │   └── vulnerability_scoring.py  # VSF-Med scoring framework
-│   │   ├── text_models/         # Text-only model interfaces
-│   │   └── vision_models/       # Vision-language model interfaces
-│   ├── utils/                   # Utility functions
-│   │   ├── database/            # Database interaction utilities
-│   │   │   └── database_utils.py  # Database operations
-│   │   ├── perturbations/       # Image and text perturbation utilities
-│   │   │   ├── image_perturbations.py  # Visual perturbation methods
-│   │   │   └── text_perturbations.py   # Text attack methods
-│   │   └── visualization/       # Visualization utilities
-│   │       └── image_utils.py   # Image comparison and analysis
-│   └── experiments/             # Experimental configurations
-├── notebooks/                   # Main experiment notebooks
-│   ├── 01_generate_adversarial_samples.ipynb  # Creation of adversarial prompts
-│   ├── 02_gpt_radiologist_baseline.ipynb      # Base notebook for GPT-4o evaluation
-│   ├── 03_gpt_radiologist_visual_perturbation.ipynb  # Visual perturbation evaluation
-│   └── 04_gpt_vulnerability_evaluation.ipynb  # Evaluation of model responses
-├── templates/                   # Template files
-│   ├── text_attack_templates.txt         # Templates for text attacks
-│   ├── visual_perturbation_methods.txt   # Methods for visual perturbations
-│   └── vsf_scoring_rubric.txt            # Evaluation rubric for scoring
-├── requirements.txt             # Project dependencies
-└── README.md                    # Project documentation
+├── src/                           # Source code
+│   ├── config/
+│   │   └── default_config.yaml    # Default configuration
+│   ├── database/
+│   │   └── dbschema.sql           # PostgreSQL database schema
+│   ├── models/evaluation/
+│   │   └── vulnerability_scoring.py  # VSF-Med scoring framework
+│   └── utils/
+│       ├── database/database_utils.py    # Database interactions
+│       ├── perturbations/
+│       │   ├── image_perturbations.py    # Visual perturbation methods
+│       │   └── text_perturbations.py     # Text attack methods
+│       └── visualization/image_utils.py  # Image analysis utilities
+├── notebooks/                     # Main experiment notebooks 
+│   ├── 01_generate_adversarial_samples.ipynb      # Creates adversarial prompts
+│   ├── 02_gpt_radiologist_baseline.ipynb          # Base GPT-4o evaluation
+│   ├── 03_gpt_radiologist_visual_perturbation.ipynb  # Tests visual robustness
+│   └── 04_gpt_vulnerability_evaluation.ipynb      # Evaluates model responses
+├── templates/                     # Templates for experiments
+│   ├── text_attack_templates.txt          # Text attack patterns
+│   ├── visual_perturbation_methods.txt    # Visual attack implementations
+│   └── vsf_scoring_rubric.txt             # Vulnerability scoring rubric
+└── requirements.txt               # Project dependencies
 ```
 
 ## Evaluation Workflow
@@ -155,15 +147,50 @@ pip install -r requirements.txt
 - Python 3.8+
 - OpenAI API key (for GPT-4o access)
 - MIMIC-CXR dataset access
+- PostgreSQL database
 - Required Python libraries:
   - pandas
   - numpy
   - sqlalchemy
+  - psycopg2-binary
   - openai
   - PIL
   - cv2
   - matplotlib
   - scikit-image
+
+## Distributed Experiment Setup
+
+VSF-Med is designed to support distributed experiments across multiple computers:
+
+### Database Setup
+
+The project uses a PostgreSQL database to store questions, model responses, and evaluation results:
+
+1. **Setup PostgreSQL**: Install and configure PostgreSQL 13+
+2. **Create Database Schema**: Run the schema in `src/database/dbschema.sql`
+3. **Configure Connection**: Update database connection settings in your config file
+
+### Cloud Storage for Images
+
+MIMIC-CXR JPG files can be stored in cloud storage or a central location:
+
+1. **Cloud Options**: 
+   - Google Cloud Storage
+   - AWS S3
+   - Azure Blob Storage
+   - Shared network drive
+
+2. **Configuration**: 
+   - Update `paths.data_dir` in your config to point to the mounted path
+   - Ensure proper authentication to access files
+   - Use relative paths in the database to remain location-agnostic
+
+Using this distributed approach, you can:
+- Run experiments from multiple machines
+- Centralize results in a single database
+- Avoid duplicating the large MIMIC-CXR dataset
+- Scale processing across multiple computers
 
 ## Citation
 

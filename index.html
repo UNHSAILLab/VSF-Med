@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSF-Med: A Vulnerability Scoring Framework for Medical Vision-Language Models</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        nav {
+            background-color: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links li a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links li a:hover {
+            background-color: var(--secondary);
+        }
+        
+        section {
+            padding: 60px 0;
+        }
+        
+        section:nth-child(odd) {
+            background-color: white;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .grid {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        @media (min-width: 768px) {
+            .grid {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .grid .card {
+                flex: 1;
+                min-width: 45%;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: block;
+            width: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: #34495e;
+            color: white;
+            padding: 20px;
+        }
+        
+        .card-header h3 {
+            color: white;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-body ul {
+            padding-left: 20px;
+        }
+        
+        pre {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 0 30px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 40px 0;
+            }
+            
+            .nav-links li a {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>VSF-Med</h1>
+            <p>A Vulnerability Scoring Framework for Medical Vision-Language Models</p>
+        </div>
+    </header>
+    
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#structure">Structure</a></li>
+            <li><a href="#workflow">Workflow</a></li>
+            <li><a href="#attack-categories">Attack Categories</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#usage">Usage</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <section id="overview">
+            <div class="container">
+                <h2>Overview</h2>
+                <p>VSF-Med is a comprehensive framework designed to systematically evaluate the safety, reliability, and adversarial robustness of Vision-Language Models (Vision LLMs) in clinical imaging applications.</p>
+                
+                <h3>Vulnerability Dimensions</h3>
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Safety Dimensions</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Prompt injection effectiveness</li>
+                                <li>Jailbreak resilience</li>
+                                <li>Potential confidentiality breach</li>
+                                <li>Risk of misinformation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Reliability Dimensions</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Denial of service resilience</li>
+                                <li>Persistence of attack effects</li>
+                                <li>Safety bypass success</li>
+                                <li>Impact on medical decision support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>We apply this framework to ten clinically motivated adversarial scenarios, ranging from contextual prompt injections to image perturbations, using the MIMIC-CXR dataset.</p>
+            </div>
+        </section>
+        
+        <section id="structure">
+            <div class="container">
+                <h2>Repository Structure</h2>
+                <pre><code>VSF-Med/
+├── src/                         # Source code
+│   ├── config/                  # Configuration files
+│   │   └── default_config.yaml  # Default configuration
+│   ├── data/                    # Data processing utilities
+│   │   ├── raw/                 # Scripts for raw data processing
+│   │   └── processed/           # Scripts for processed data
+│   ├── models/                  # Model implementations
+│   │   ├── evaluation/          # Evaluation and scoring models
+│   │   │   └── vulnerability_scoring.py  # VSF-Med scoring framework
+│   │   ├── text_models/         # Text-only model interfaces
+│   │   └── vision_models/       # Vision-language model interfaces
+│   ├── utils/                   # Utility functions
+│   │   ├── database/            # Database interaction utilities
+│   │   │   └── database_utils.py  # Database operations
+│   │   ├── perturbations/       # Image and text perturbation utilities
+│   │   │   ├── image_perturbations.py  # Visual perturbation methods
+│   │   │   └── text_perturbations.py   # Text attack methods
+│   │   └── visualization/       # Visualization utilities
+│   │       └── image_utils.py   # Image comparison and analysis
+│   └── experiments/             # Experimental configurations
+├── notebooks/                   # Main experiment notebooks
+│   ├── 01_generate_adversarial_samples.ipynb  # Creation of adversarial prompts
+│   ├── 02_gpt_radiologist_baseline.ipynb      # Base notebook for GPT-4o evaluation
+│   ├── 03_gpt_radiologist_visual_perturbation.ipynb  # Visual perturbation evaluation
+│   └── 04_gpt_vulnerability_evaluation.ipynb  # Evaluation of model responses
+├── templates/                   # Template files
+│   ├── text_attack_templates.txt         # Templates for text attacks
+│   ├── visual_perturbation_methods.txt   # Methods for visual perturbations
+│   └── vsf_scoring_rubric.txt            # Evaluation rubric for scoring</code></pre>
+            </div>
+        </section>
+        
+        <section id="workflow">
+            <div class="container">
+                <h2>Evaluation Workflow</h2>
+                <ol>
+                    <li><strong>Dataset Selection:</strong> A diverse selection of 5,000 frontal chest X-ray studies from MIMIC-CXR, stratified by patient demographics and key pathologies.</li>
+                    <li><strong>Adversarial Variant Generation:</strong>
+                        <ul>
+                            <li>Text attacks: 18 attack categories with 2-4 expert-curated prompt templates each</li>
+                            <li>Visual attacks: 6 perturbation methods (Gaussian noise, checkerboard, random arrow overlay, Moiré pattern, steganographic hide, LSB extraction)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Model Inference:</strong> Invoking Vision LLMs through API clients for each variant, recording diagnostics and additional output.</li>
+                    <li><strong>LLM-based Scoring:</strong> Independent LLM judges consume model outputs along with the VSF scoring rubric to evaluate vulnerability across all dimensions.</li>
+                    <li><strong>Aggregation and Analysis:</strong> Computing per-dimension statistics and categorizing vulnerability scores into risk tiers.</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section id="attack-categories">
+            <div class="container">
+                <h2>Attack Categories</h2>
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Text Attack Categories</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Our framework formalizes 18 different attack categories including:</p>
+                            <ul>
+                                <li>Prompt Injection</li>
+                                <li>Jailbreak Attempts</li>
+                                <li>Confidentiality Breach</li>
+                                <li>Misinformation Generation</li>
+                                <li>Denial-of-Service</li>
+                                <li>Persistence Attacks</li>
+                                <li>Safety Bypass</li>
+                                <li>Semantic Shift</li>
+                                <li>Omission Attacks</li>
+                                <li>Over-Confidence Induction</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Visual Perturbation Methods</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>We apply six visual perturbation techniques to test model robustness:</p>
+                            <ul>
+                                <li>Gaussian noise at various levels</li>
+                                <li>Checkerboard overlays (single or tiled)</li>
+                                <li>Moiré patterns with adjustable frequency</li>
+                                <li>Random arrow artifacts</li>
+                                <li>Steganographic information hiding</li>
+                                <li>LSB-plane extraction</li>
+                            </ul>
+                            <p>Perturbation parameters are optimized via grid search to balance imperceptibility (SSIM ≥ 0.85) with attack potency.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="installation">
+            <div class="container">
+                <h2>Installation</h2>
+                <pre><code># Clone the repository
+git clone https://github.com/UNHSAILLab/VSF-Med.git
+cd VSF-Med
+
+# Create and activate virtual environment (optional but recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt</code></pre>
+                
+                <h3>Requirements</h3>
+                <ul>
+                    <li>Python 3.8+</li>
+                    <li>OpenAI API key (for GPT-4o access)</li>
+                    <li>MIMIC-CXR dataset access</li>
+                    <li>Required Python libraries:
+                        <ul>
+                            <li>pandas</li>
+                            <li>numpy</li>
+                            <li>sqlalchemy</li>
+                            <li>openai</li>
+                            <li>PIL</li>
+                            <li>cv2</li>
+                            <li>matplotlib</li>
+                            <li>scikit-image</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+        <section id="usage">
+            <div class="container">
+                <h2>Usage</h2>
+                
+                <h3>Configuration</h3>
+                <ol>
+                    <li>Copy and customize the default configuration:
+                        <pre><code>cp src/config/default_config.yaml src/config/my_config.yaml</code></pre>
+                    </li>
+                    <li>Edit <code>my_config.yaml</code> to set database credentials, API keys, and data paths.</li>
+                </ol>
+                
+                <h3>Running Experiments</h3>
+                <ol>
+                    <li><strong>Generate Adversarial Prompts:</strong>
+                        <pre><code># Using the script
+python src/data/processed/generate_adversarial_prompts.py --config src/config/my_config.yaml
+
+# Or run the notebook
+jupyter notebook notebooks/01_generate_adversarial_samples.ipynb</code></pre>
+                    </li>
+                    <li><strong>Generate Visual Perturbations:</strong>
+                        <pre><code>python src/utils/perturbations/image_perturbations.py --source /path/to/images --output /path/to/output</code></pre>
+                    </li>
+                    <li><strong>Evaluate Model Performance:</strong>
+                        <pre><code># Base evaluation
+jupyter notebook notebooks/02_gpt_radiologist_baseline.ipynb
+
+# Visual perturbation evaluation
+jupyter notebook notebooks/03_gpt_radiologist_visual_perturbation.ipynb</code></pre>
+                    </li>
+                    <li><strong>Analyze Results:</strong>
+                        <pre><code>jupyter notebook notebooks/04_gpt_vulnerability_evaluation.ipynb</code></pre>
+                    </li>
+                </ol>
+                
+                <h3>Citation</h3>
+                <pre><code>@article{vsf-med2024,
+  title={VSF-Med: A Vulnerability Scoring Framework for Medical Vision-Language Models},
+  author={[Author names]},
+  journal={[Journal]},
+  year={2024}
+}</code></pre>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>This project is licensed under the terms of the included LICENSE file.</p>
+            <div class="github-link">
+                <a href="https://github.com/UNHSAILLab/VSF-Med" class="btn" target="_blank">View on GitHub</a>
+            </div>
+            <p>&copy; 2024 UNH SAIL Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
