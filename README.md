@@ -34,10 +34,14 @@ VSF-Med/
 │       │   └── text_perturbations.py     # Text attack methods
 │       └── visualization/image_utils.py  # Image analysis utilities
 ├── notebooks/                     # Main experiment notebooks 
-│   ├── 01_generate_adversarial_samples.ipynb      # Creates adversarial prompts
-│   ├── 02_gpt_radiologist_baseline.ipynb          # Base GPT-4o evaluation
-│   ├── 03_gpt_radiologist_visual_perturbation.ipynb  # Tests visual robustness
-│   └── 04_gpt_vulnerability_evaluation.ipynb      # Evaluates model responses
+│   ├── 01_data_preparation_adversarial_samples.ipynb   # Data preparation and adversarial samples
+│   ├── 02_model_evaluation_chexagent_baseline.ipynb    # CheXagent baseline evaluation
+│   ├── 03_model_evaluation_chexagent_perturbed.ipynb   # CheXagent with perturbed images
+│   ├── 04_model_evaluation_gpt_baseline.ipynb          # GPT-4o baseline evaluation
+│   ├── 05_vulnerability_scoring_framework.ipynb        # VSF-Med scoring application
+│   ├── 06_model_evaluation_claude.ipynb                # Claude model evaluation
+│   ├── 07_benchmarking_models.ipynb                    # Cross-model performance comparison
+│   └── 08_analysis_radiologist_comparison.ipynb        # Comparison with radiologists
 ├── templates/                     # Templates for experiments
 │   ├── text_attack_templates.txt          # Text attack patterns
 │   ├── visual_perturbation_methods.txt    # Visual attack implementations
@@ -47,17 +51,22 @@ VSF-Med/
 
 ## Evaluation Workflow
 
-1. **Dataset Selection**: A diverse selection of 5,000 frontal chest X-ray studies from MIMIC-CXR, stratified by patient demographics and key pathologies.
+1. **Data Preparation**: Prepare adversarial samples from the MIMIC-CXR dataset, including 5,000 frontal chest X-ray studies stratified by patient demographics and key pathologies.
 
 2. **Adversarial Variant Generation**:
    - **Text attacks**: 18 attack categories with 2-4 expert-curated prompt templates each
    - **Visual attacks**: 6 perturbation methods (Gaussian noise, checkerboard, random arrow overlay, Moiré pattern, steganographic hide, LSB extraction)
 
-3. **Model Inference**: Invoking Vision LLMs through API clients for each variant, recording diagnostics and additional output.
+3. **Model Evaluation**: Evaluate multiple vision-language models on both standard and adversarial inputs:
+   - CheXagent-8b: Specialized medical imaging model
+   - GPT-4o: General-purpose multimodal model
+   - Claude: General-purpose multimodal model
 
-4. **LLM-based Scoring**: Independent LLM judges consume model outputs along with the VSF scoring rubric to evaluate vulnerability across all dimensions.
+4. **Vulnerability Scoring**: Apply the VSF-Med framework to score model outputs across the 8 vulnerability dimensions.
 
-5. **Aggregation and Analysis**: Computing per-dimension statistics and categorizing vulnerability scores into risk tiers.
+5. **Benchmarking**: Compare performance across models to identify strengths and weaknesses.
+
+6. **Clinical Comparison**: Compare model outputs with radiologist interpretations to assess clinical impact.
 
 ## Text Attack Categories
 
@@ -114,38 +123,49 @@ pip install -r requirements.txt
 
 ### Running Experiments
 
-1. **Generate Adversarial Prompts**:
+The experimental workflow is organized in sequential notebooks:
+
+1. **Data Preparation and Adversarial Sample Generation**:
    ```bash
-   # Using the script
-   python src/data/processed/generate_adversarial_prompts.py --config src/config/my_config.yaml
+   jupyter notebook notebooks/01_data_preparation_adversarial_samples.ipynb
+   ```
+
+2. **Model Baseline Evaluations**:
+   ```bash
+   # CheXagent baseline
+   jupyter notebook notebooks/02_model_evaluation_chexagent_baseline.ipynb
    
-   # Or run the notebook
-   jupyter notebook notebooks/01_generate_adversarial_samples.ipynb
-   ```
-
-2. **Generate Visual Perturbations**:
-   ```bash
-   python src/utils/perturbations/image_perturbations.py --source /path/to/images --output /path/to/output
-   ```
-
-3. **Evaluate Model Performance**:
-   ```bash
-   # Base evaluation
-   jupyter notebook notebooks/02_gpt_radiologist_baseline.ipynb
+   # GPT-4o baseline
+   jupyter notebook notebooks/04_model_evaluation_gpt_baseline.ipynb
    
-   # Visual perturbation evaluation
-   jupyter notebook notebooks/03_gpt_radiologist_visual_perturbation.ipynb
+   # Claude baseline
+   jupyter notebook notebooks/06_model_evaluation_claude.ipynb
    ```
 
-4. **Analyze Results**:
+3. **Adversarial Testing**:
    ```bash
-   jupyter notebook notebooks/04_gpt_vulnerability_evaluation.ipynb
+   # CheXagent with perturbed images
+   jupyter notebook notebooks/03_model_evaluation_chexagent_perturbed.ipynb
+   ```
+
+4. **Vulnerability Scoring and Analysis**:
+   ```bash
+   # Apply the VSF-Med framework
+   jupyter notebook notebooks/05_vulnerability_scoring_framework.ipynb
+   
+   # Compare across models
+   jupyter notebook notebooks/07_benchmarking_models.ipynb
+   
+   # Compare with radiologists
+   jupyter notebook notebooks/08_analysis_radiologist_comparison.ipynb
    ```
 
 ## Requirements
 
 - Python 3.8+
-- OpenAI API key (for GPT-4o access)
+- API keys:
+  - OpenAI API key (for GPT-4o access)
+  - Anthropic API key (for Claude access)
 - MIMIC-CXR dataset access
 - PostgreSQL database
 - Required Python libraries:
@@ -154,10 +174,14 @@ pip install -r requirements.txt
   - sqlalchemy
   - psycopg2-binary
   - openai
+  - anthropic
   - PIL
   - cv2
   - matplotlib
   - scikit-image
+  - seaborn
+  - plotly
+  - nltk
 
 ## Distributed Experiment Setup
 

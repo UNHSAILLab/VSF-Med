@@ -240,6 +240,7 @@
             <li><a href="#structure">Structure</a></li>
             <li><a href="#workflow">Workflow</a></li>
             <li><a href="#attack-categories">Attack Categories</a></li>
+            <li><a href="#notebooks">Notebooks</a></li>
             <li><a href="#installation">Installation</a></li>
             <li><a href="#usage">Usage</a></li>
         </ul>
@@ -292,32 +293,32 @@
 ├── src/                         # Source code
 │   ├── config/                  # Configuration files
 │   │   └── default_config.yaml  # Default configuration
-│   ├── data/                    # Data processing utilities
-│   │   ├── raw/                 # Scripts for raw data processing
-│   │   └── processed/           # Scripts for processed data
+│   ├── database/                # Database schemas
+│   │   └── dbschema.sql         # PostgreSQL database schema
 │   ├── models/                  # Model implementations
-│   │   ├── evaluation/          # Evaluation and scoring models
-│   │   │   └── vulnerability_scoring.py  # VSF-Med scoring framework
-│   │   ├── text_models/         # Text-only model interfaces
-│   │   └── vision_models/       # Vision-language model interfaces
-│   ├── utils/                   # Utility functions
-│   │   ├── database/            # Database interaction utilities
-│   │   │   └── database_utils.py  # Database operations
-│   │   ├── perturbations/       # Image and text perturbation utilities
-│   │   │   ├── image_perturbations.py  # Visual perturbation methods
-│   │   │   └── text_perturbations.py   # Text attack methods
-│   │   └── visualization/       # Visualization utilities
-│   │       └── image_utils.py   # Image comparison and analysis
-│   └── experiments/             # Experimental configurations
+│   │   └── evaluation/          # Evaluation models
+│   │       └── vulnerability_scoring.py  # VSF-Med scoring framework
+│   └── utils/                   # Utility functions
+│       ├── database/            # Database utilities
+│       │   └── database_utils.py  # Database operations
+│       ├── perturbations/       # Perturbation utilities
+│       │   ├── image_perturbations.py  # Visual perturbation methods
+│       │   └── text_perturbations.py   # Text attack methods
+│       └── visualization/       # Visualization utilities
+│           └── image_utils.py   # Image analysis tools
 ├── notebooks/                   # Main experiment notebooks
-│   ├── 01_generate_adversarial_samples.ipynb  # Creation of adversarial prompts
-│   ├── 02_gpt_radiologist_baseline.ipynb      # Base notebook for GPT-4o evaluation
-│   ├── 03_gpt_radiologist_visual_perturbation.ipynb  # Visual perturbation evaluation
-│   └── 04_gpt_vulnerability_evaluation.ipynb  # Evaluation of model responses
-├── templates/                   # Template files
-│   ├── text_attack_templates.txt         # Templates for text attacks
-│   ├── visual_perturbation_methods.txt   # Methods for visual perturbations
-│   └── vsf_scoring_rubric.txt            # Evaluation rubric for scoring</code></pre>
+│   ├── 01_data_preparation_adversarial_samples.ipynb   # Data preparation
+│   ├── 02_model_evaluation_chexagent_baseline.ipynb    # CheXagent baseline
+│   ├── 03_model_evaluation_chexagent_perturbed.ipynb   # CheXagent perturbation tests
+│   ├── 04_model_evaluation_gpt_baseline.ipynb          # GPT-4o baseline
+│   ├── 05_vulnerability_scoring_framework.ipynb        # Applying VSF-Med
+│   ├── 06_model_evaluation_claude.ipynb                # Claude model tests
+│   ├── 07_benchmarking_models.ipynb                    # Model comparison
+│   └── 08_analysis_radiologist_comparison.ipynb        # Radiologist comparison
+├── templates/                   # Templates for experiments
+│   ├── text_attack_templates.txt          # Text attack patterns
+│   ├── visual_perturbation_methods.txt    # Visual attack methods
+│   └── vsf_scoring_rubric.txt             # Scoring rubric</code></pre>
             </div>
         </section>
         
@@ -325,16 +326,23 @@
             <div class="container">
                 <h2>Evaluation Workflow</h2>
                 <ol>
-                    <li><strong>Dataset Selection:</strong> A diverse selection of 5,000 frontal chest X-ray studies from MIMIC-CXR, stratified by patient demographics and key pathologies.</li>
+                    <li><strong>Data Preparation:</strong> Prepare a diverse selection of 5,000 frontal chest X-ray studies from MIMIC-CXR, stratified by patient demographics and key pathologies.</li>
                     <li><strong>Adversarial Variant Generation:</strong>
                         <ul>
                             <li>Text attacks: 18 attack categories with 2-4 expert-curated prompt templates each</li>
                             <li>Visual attacks: 6 perturbation methods (Gaussian noise, checkerboard, random arrow overlay, Moiré pattern, steganographic hide, LSB extraction)</li>
                         </ul>
                     </li>
-                    <li><strong>Model Inference:</strong> Invoking Vision LLMs through API clients for each variant, recording diagnostics and additional output.</li>
-                    <li><strong>LLM-based Scoring:</strong> Independent LLM judges consume model outputs along with the VSF scoring rubric to evaluate vulnerability across all dimensions.</li>
-                    <li><strong>Aggregation and Analysis:</strong> Computing per-dimension statistics and categorizing vulnerability scores into risk tiers.</li>
+                    <li><strong>Model Evaluation:</strong> Test multiple vision-language models on both standard and adversarial inputs:
+                        <ul>
+                            <li>CheXagent-8b: Specialized medical imaging model</li>
+                            <li>GPT-4o: General-purpose multimodal model</li>
+                            <li>Claude: General-purpose multimodal model</li>
+                        </ul>
+                    </li>
+                    <li><strong>Vulnerability Scoring:</strong> Apply the VSF-Med framework to score model outputs across vulnerability dimensions.</li>
+                    <li><strong>Benchmarking:</strong> Compare performance across models to identify strengths and weaknesses.</li>
+                    <li><strong>Clinical Comparison:</strong> Compare model outputs with radiologist interpretations to assess clinical impact.</li>
                 </ol>
             </div>
         </section>
@@ -384,6 +392,53 @@
             </div>
         </section>
         
+        <section id="notebooks">
+            <div class="container">
+                <h2>Jupyter Notebooks</h2>
+                <p>The experimental workflow is organized in sequential Jupyter notebooks:</p>
+                
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Data Preparation & Sample Generation</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>01_data_preparation_adversarial_samples.ipynb</strong>: Prepares datasets and generates adversarial samples using 18 attack categories and 6 perturbation methods.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Model Evaluation Notebooks</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>02_model_evaluation_chexagent_baseline.ipynb</strong>: Evaluates the baseline performance of StanfordAIMI's CheXagent-8b model on unperturbed images.</li>
+                                <li><strong>03_model_evaluation_chexagent_perturbed.ipynb</strong>: Tests CheXagent against visually perturbed images to assess robustness.</li>
+                                <li><strong>04_model_evaluation_gpt_baseline.ipynb</strong>: Evaluates the baseline performance of GPT-4o Vision on standard inputs.</li>
+                                <li><strong>06_model_evaluation_claude.ipynb</strong>: Tests Anthropic's Claude model on both standard and adversarial inputs.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Analysis Notebooks</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>05_vulnerability_scoring_framework.ipynb</strong>: Applies the VSF-Med framework to score model responses across 8 vulnerability dimensions.</li>
+                                <li><strong>07_benchmarking_models.ipynb</strong>: Performs comprehensive cross-model comparison and benchmark analysis.</li>
+                                <li><strong>08_analysis_radiologist_comparison.ipynb</strong>: Compares model performance with radiologist ground truth to assess clinical impact.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <section id="installation">
             <div class="container">
                 <h2>Installation</h2>
@@ -401,18 +456,21 @@ pip install -r requirements.txt</code></pre>
                 <h3>Requirements</h3>
                 <ul>
                     <li>Python 3.8+</li>
-                    <li>OpenAI API key (for GPT-4o access)</li>
+                    <li>API keys:
+                        <ul>
+                            <li>OpenAI API key (for GPT-4o access)</li>
+                            <li>Anthropic API key (for Claude access)</li>
+                        </ul>
+                    </li>
                     <li>MIMIC-CXR dataset access</li>
+                    <li>PostgreSQL database</li>
                     <li>Required Python libraries:
                         <ul>
-                            <li>pandas</li>
-                            <li>numpy</li>
-                            <li>sqlalchemy</li>
-                            <li>openai</li>
-                            <li>PIL</li>
-                            <li>cv2</li>
-                            <li>matplotlib</li>
-                            <li>scikit-image</li>
+                            <li>pandas, numpy</li>
+                            <li>sqlalchemy, psycopg2-binary</li>
+                            <li>openai, anthropic</li>
+                            <li>PIL, cv2, matplotlib, scikit-image</li>
+                            <li>seaborn, plotly, nltk</li>
                         </ul>
                     </li>
                 </ul>
@@ -432,28 +490,23 @@ pip install -r requirements.txt</code></pre>
                 </ol>
                 
                 <h3>Running Experiments</h3>
-                <ol>
-                    <li><strong>Generate Adversarial Prompts:</strong>
-                        <pre><code># Using the script
-python src/data/processed/generate_adversarial_prompts.py --config src/config/my_config.yaml
+                <p>The experimental workflow is organized in sequential notebooks:</p>
+                
+                <pre><code># 1. Data Preparation and Adversarial Sample Generation
+jupyter notebook notebooks/01_data_preparation_adversarial_samples.ipynb
 
-# Or run the notebook
-jupyter notebook notebooks/01_generate_adversarial_samples.ipynb</code></pre>
-                    </li>
-                    <li><strong>Generate Visual Perturbations:</strong>
-                        <pre><code>python src/utils/perturbations/image_perturbations.py --source /path/to/images --output /path/to/output</code></pre>
-                    </li>
-                    <li><strong>Evaluate Model Performance:</strong>
-                        <pre><code># Base evaluation
-jupyter notebook notebooks/02_gpt_radiologist_baseline.ipynb
+# 2. Model Baseline Evaluations
+jupyter notebook notebooks/02_model_evaluation_chexagent_baseline.ipynb
+jupyter notebook notebooks/04_model_evaluation_gpt_baseline.ipynb
+jupyter notebook notebooks/06_model_evaluation_claude.ipynb
 
-# Visual perturbation evaluation
-jupyter notebook notebooks/03_gpt_radiologist_visual_perturbation.ipynb</code></pre>
-                    </li>
-                    <li><strong>Analyze Results:</strong>
-                        <pre><code>jupyter notebook notebooks/04_gpt_vulnerability_evaluation.ipynb</code></pre>
-                    </li>
-                </ol>
+# 3. Adversarial Testing
+jupyter notebook notebooks/03_model_evaluation_chexagent_perturbed.ipynb
+
+# 4. Vulnerability Scoring and Analysis
+jupyter notebook notebooks/05_vulnerability_scoring_framework.ipynb
+jupyter notebook notebooks/07_benchmarking_models.ipynb
+jupyter notebook notebooks/08_analysis_radiologist_comparison.ipynb</code></pre>
                 
                 <h3>Citation</h3>
                 <pre><code>@article{vsf-med2024,
