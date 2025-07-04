@@ -220,12 +220,17 @@ Using this distributed approach, you can:
 
 If you use VSF-Med in your research, please cite our paper:
 ```
-@article{vsf-med2024,
-  title={VSF-Med: A Vulnerability Scoring Framework for Medical Vision-Language Models},
-  author={[Author names]},
-  journal={[Journal]},
-  year={2024}
+@misc{Sadanandan2025VSFMed,
+  title         = {VSF-Med: A Vulnerability Scoring Framework for Medical Vision-Language Models},
+  author        = {Sadanandan, Binesh and Behzadan, Vahid},
+  year          = {2025},
+  eprint        = {2507.00052},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  doi           = {10.48550/arXiv.2507.00052},
+  url           = {https://arxiv.org/abs/2507.00052},
 }
+
 ```
 
 ## License
