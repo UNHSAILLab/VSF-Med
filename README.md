@@ -99,7 +99,7 @@ Perturbation parameters are optimized via grid search to balance imperceptibilit
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/VSF-Med.git
+git clone https://github.com/VSF-Med.git
 cd VSF-Med
 
 # Create and activate virtual environment (optional but recommended)
