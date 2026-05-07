@@ -1,0 +1,44 @@
+# VSF-Med v2 — Dataset Sampling (BOOTSTRAP variant)
+#
+# Produces a base_cases.csv from local MIMIC-CXR images + MIMIC-Diff-VQA
+# question splits, used to validate the full pipeline before canonical
+# PhysioNet/CheXpert/GMAI-MMBench data lands.
+#
+# This file does NOT replace protocol/dataset_sampling.yaml — that one stays
+# frozen for the canonical run. When canonical data is in, regenerate
+# base_cases.csv from the canonical YAML.
+
+protocol_version: "vsf-med-v2.0-bootstrap"
+random_seed: 20260505
+
+datasets:
+  - name: mimic_cxr_vqa
+    version: "mimic-diff-vqa-local-1100img"
+    role: bootstrap_chest_xray_vqa_cohort
+    target_count: 1500          # capped by Q/A pairs whose images are local (~1,978)
+    license: PhysioNet-credentialed
+    access_notes: >
+      MIMIC-CXR images under PhysioNet credentialing (do not redistribute).
+      VQA annotations under their source dataset license (MIMIC-Diff-VQA / Medical-CXR-VQA).
+
+stratification:
+  axes:
+    - dataset
+    - content_stratum         # vqa_presence / vqa_abnormality / etc.
+    - vqa_split               # train / valid / test (informational only)
+
+  per_dataset_quotas:
+    mimic_cxr_vqa:
+      pathology_min_per_stratum: 80   # spread across content_strata
+      task_type_distribution: dataset_native_mix  # → all visual_question_answering
+
+quality_gates:
+  go_no_go_1_bootstrap:
+    valid_image_paths_min_pct: 99
+    usable_labels_min_pct: 95
+    pathology_groups_min_count: 50
+    manual_review_sample_size: 50
+    manual_review_max_serious_errors: 3
+    note: >
+      Bootstrap-only relaxation of the canonical Go/No-Go 1 bars. Does NOT
+      satisfy the publishable benchmark requirement.

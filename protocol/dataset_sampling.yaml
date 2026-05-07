@@ -1,0 +1,133 @@
+# VSF-Med v2 — Dataset Sampling (Phase 0 frozen)
+#
+# Output: data/processed/base_cases.csv (4,000 rows)
+
+protocol_version: "vsf-med-v2.0"
+random_seed: 20260505
+
+datasets:
+  - name: mimic_cxr_jpg
+    version: "2.1.0"
+    role: primary_chest_xray_cohort
+    target_count: 2000
+    license: PhysioNet-credentialed
+    access_notes: "Credentialed access; do not redistribute images."
+    source_columns_required:
+      - dicom_id
+      - subject_id
+      - study_id
+      - view_position
+      - report_text
+      - chexpert_labels
+      - patient_demographics
+
+  - name: chexpert
+    version: "v1.0"
+    role: external_chest_xray_validation
+    target_count: 1000
+    license: Stanford-CheXpert
+    access_notes: "Available for non-commercial research; preserve attribution."
+    source_columns_required:
+      - patient_id
+      - study
+      - view
+      - chexpert_labels
+      - report_text_optional
+
+  - name: gmai_mmbench
+    version: "<pin-release>"
+    role: multi_modality_generalization
+    target_count: 1000
+    license: per_dataset_terms
+    access_notes: "Multi-modality medical VQA; stratify across imaging modalities."
+    source_columns_required:
+      - case_id
+      - modality
+      - anatomy
+      - task_type
+      - question
+      - answer
+      - choices_optional
+
+stratification:
+  axes:
+    - dataset
+    - pathology
+    - view_position
+    - task_type
+    - normal_vs_abnormal
+    - modality                       # primarily for GMAI-MMBench
+    - demographic_age_band           # where permitted
+    - demographic_sex                # where permitted
+
+  pathology_strata_chest_xray:
+    - no_finding
+    - cardiomegaly
+    - edema
+    - pleural_effusion
+    - pneumonia_or_consolidation
+    - pneumothorax
+    - atelectasis
+    - support_devices
+
+  task_type_strata:
+    - finding_detection
+    - report_generation
+    - clinical_triage
+    - follow_up_recommendation
+    - visual_question_answering
+    - safety_sensitive_medical_advice
+
+  per_dataset_quotas:
+    mimic_cxr_jpg:
+      pathology_min_per_stratum: 150        # 8 strata × 150 = 1200 min; remainder fills mixed
+      normal_vs_abnormal_ratio: [0.3, 0.7]  # 30% no_finding, 70% with findings
+      task_type_distribution:
+        finding_detection: 0.30
+        report_generation: 0.25
+        clinical_triage: 0.15
+        follow_up_recommendation: 0.10
+        visual_question_answering: 0.10
+        safety_sensitive_medical_advice: 0.10
+    chexpert:
+      pathology_min_per_stratum: 80
+      normal_vs_abnormal_ratio: [0.3, 0.7]
+      task_type_distribution: same_as_mimic
+    gmai_mmbench:
+      modality_min_per_stratum: 80          # spread across modalities
+      task_type_distribution: dataset_native_mix
+
+  no_dataset_dominates_any_task_type: true  # enforced post-sample
+
+base_cases_csv_schema:
+  required_columns:
+    - case_id                # vsfmed-v2-{dataset}-{6-digit-int}
+    - dataset                # mimic_cxr_jpg | chexpert | gmai_mmbench
+    - source_id              # original ID in source dataset
+    - image_path             # relative to data/raw/<dataset>/
+    - modality               # cxr | ct | mri | ophth | dermo | path | us | ...
+    - anatomy
+    - view_position
+    - task_type
+    - clinical_prompt        # the benign question (C1 baseline)
+    - ground_truth
+    - labels                 # JSON dict
+    - report_text            # nullable
+    - demographic_metadata   # JSON dict, may be redacted
+    - split                  # pilot | full | held_out
+    - license_or_access_notes
+
+  splits:
+    pilot: 200               # used in Phase 4
+    full: 3800               # used in Phase 5
+    held_out: 0              # reserved; expand in v3 if needed
+
+quality_gates:
+  go_no_go_1:
+    valid_image_paths_min_pct: 95
+    usable_labels_min_pct: 90
+    pathology_groups_min_count: 50
+    no_dataset_dominates_any_task_type: true
+    manual_review_sample_size: 100
+    manual_review_max_serious_errors: 4
+    restricted_data_handling_compliant: true

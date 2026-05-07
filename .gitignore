@@ -1,1 +1,24 @@
 **/.claude/settings.local.json
+
+# IDE / editor noise
+.idea/
+.vscode/
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Generated / derived data — too large for git, regenerate via scripts/
+data/*.json                     # MIMIC-Diff-VQA splits (download from source)
+data/perturbed/                 # produced by scripts/build_perturbed_images.py
+data/processed/                 # produced by scripts/build_base_cases_*.py
+data/results/                   # produced by scripts/run_pilot.py
+data/raw/                       # canonical dataset roots (PhysioNet-credentialed)
+
+# Logs
+*.log
+nohup.out

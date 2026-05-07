@@ -24,9 +24,13 @@ pyyaml>=6.0
 jupyter>=1.0.0
 ipython>=7.30.0
 
-# Optional - Machine learning
-torch>=1.10.0
-transformers>=4.20.0
+# Open-weight model wrappers (CheXOne / MedGemma / LLaVA-Med / Qwen3.6 / Llama 4)
+torch>=2.4.0
+transformers>=4.55.0
+accelerate>=1.0.0
+qwen-vl-utils>=0.0.10
+sentencepiece>=0.2.0
+safetensors>=0.4.0
 
 # Utilities
 tqdm>=4.62.0

@@ -1,0 +1,197 @@
+# VSF-Med v2 — Model List (Phase 0 frozen)
+#
+# 9 evaluation targets. Snapshot IDs marked `<freeze-at-run-start>` must be
+# resolved to a concrete API version on the day Phase 5 begins, then never
+# changed mid-run. Open-weights revisions must be pinned to a commit SHA.
+
+protocol_version: "vsf-med-v2.0"
+freeze_date: null                   # ISO date — fill at Phase 0 close
+run_start_date: null                # ISO date — fill at Phase 5 launch
+
+decoding_defaults:
+  temperature: 0.0
+  top_p: 1.0
+  max_output_tokens: 512
+  single_turn: true                 # except condition C4 (persistence)
+  seed: 20260505                    # used where API/runtime supports it
+
+logging_required_fields:
+  - model_id
+  - model_provider
+  - model_snapshot
+  - wrapper_version
+  - temperature
+  - top_p
+  - max_output_tokens
+  - input_image_format
+  - timestamp
+  - latency_seconds
+  - input_token_count
+  - output_token_count
+  - error_status
+
+models:
+  # ---------- Frontier proprietary (API) ----------
+  - model_id: gpt_5_2_mini
+    family: frontier
+    provider: openai
+    snapshot: "<freeze-at-run-start>"     # e.g. gpt-5.2-mini-2026-XX-XX
+    multimodal: true
+    image_format: png_or_jpeg_b64
+    adaptive_eligible: false
+    judge_role: judges_open_targets
+    notes: "Cost-optimized tier; primary frontier rep for OpenAI lineage."
+
+  - model_id: gemini_3_flash
+    family: frontier
+    provider: google
+    snapshot: "<freeze-at-run-start>"     # e.g. gemini-3.0-flash
+    multimodal: true
+    image_format: inline_data_b64
+    adaptive_eligible: false
+    judge_role: judges_open_targets
+    notes: "Cost-optimized tier; primary frontier rep for Google lineage."
+
+  - model_id: claude_haiku_4_5
+    family: frontier
+    provider: anthropic
+    snapshot: "claude-haiku-4-5-20251001"
+    multimodal: true
+    image_format: png_or_jpeg_b64
+    adaptive_eligible: false
+    judge_role: judges_open_targets
+    notes: "Cost-optimized tier; primary frontier rep for Anthropic lineage."
+
+  # ---------- Medical specialists (open weights) ----------
+  - model_id: chexone_4b_reasoning
+    family: medical_specialist
+    provider: stanford_aimi
+    hf_repo: StanfordAIMI/CheXOne
+    revision: "<pin-commit-sha>"
+    base_arch: Qwen2.5-VL-3B-Instruct
+    parameters_billions: 4
+    inference_mode: reasoning         # generates <think>...</think> traces
+    license: CC-BY-NC-4.0
+    multimodal: true
+    image_format: pil_image
+    adaptive_eligible: true
+    hardware: "1× 24GB GPU sufficient (BF16)"
+    notes: "Specialist; CXR-focused. Family overlap with Qwen3.6-27B noted."
+
+  - model_id: chexone_4b_instruct
+    family: medical_specialist
+    provider: stanford_aimi
+    hf_repo: StanfordAIMI/CheXOne
+    revision: "<pin-commit-sha>"
+    inference_mode: instruct          # no reasoning trace
+    license: CC-BY-NC-4.0
+    multimodal: true
+    image_format: pil_image
+    adaptive_eligible: true
+    hardware: "1× 24GB GPU sufficient (BF16)"
+    notes: "Same weights as chexone_4b_reasoning, faster path. Counted as one model in the 9-model lineup; tracked separately for ablation."
+    counts_toward_lineup: false       # ablation variant, not a 9-of-9 slot
+
+  - model_id: medgemma_4b_it
+    family: medical_specialist
+    provider: google
+    hf_repo: google/medgemma-4b-it
+    revision: "<pin-commit-sha>"
+    parameters_billions: 4
+    license: Health-AI-Developer-Foundations
+    multimodal: true
+    image_format: pil_image
+    adaptive_eligible: true
+    hardware: "1× 24GB GPU sufficient (BF16)"
+    notes: "Size-matched to CheXOne for parity comparisons."
+
+  - model_id: medgemma_27b_it
+    family: medical_specialist
+    provider: google
+    hf_repo: google/medgemma-27b-it
+    revision: "<pin-commit-sha>"
+    parameters_billions: 27
+    license: Health-AI-Developer-Foundations
+    multimodal: true
+    image_format: pil_image
+    adaptive_eligible: true
+    hardware: "≥2× 80GB GPU (BF16) or 1× 80GB (FP8)"
+    notes: "Within-family size comparison vs medgemma_4b_it."
+
+  - model_id: llava_med_v1_5
+    family: medical_specialist
+    provider: microsoft
+    hf_repo: microsoft/llava-med-v1.5-mistral-7b
+    revision: "<pin-commit-sha>"
+    parameters_billions: 7
+    license: research_use_only
+    multimodal: true
+    image_format: pil_image
+    adaptive_eligible: true
+    hardware: "1× 24GB GPU (BF16)"
+    notes: "Multi-modality medical specialist; broadens specialist branch beyond CXR."
+
+  # ---------- Open generalists ----------
+  - model_id: qwen3_6_27b
+    family: open_generalist
+    provider: alibaba
+    hf_repo: Qwen/Qwen3.6-27B
+    revision: "<pin-commit-sha>"
+    parameters_billions: 27
+    license: Apache-2.0
+    multimodal: true
+    image_format: image_url_or_b64
+    adaptive_eligible: true
+    hardware: "8× 80GB (BF16) or 4× 80GB (FP8/AWQ)"
+    inference_mode: instruct          # disable thinking trace for fairness
+    notes: "Disable <think> to keep output schema comparable to other targets."
+
+  - model_id: llama_4_scout
+    family: open_generalist
+    provider: meta
+    hf_repo: meta-llama/Llama-4-Scout-17B-16E-Instruct
+    revision: "<pin-commit-sha>"
+    parameters_active_billions: 17
+    parameters_total_billions: 109
+    architecture: mixture_of_experts
+    license: Llama-4-Community
+    multimodal: true
+    image_format: pil_image
+    adaptive_eligible: true
+    hardware: "≥4× 80GB GPU"
+    notes: "Open generalist counterpart to Qwen3.6-27B."
+
+# ---------- Judge models (separate from targets) ----------
+# Plan: leave-one-family-out judging.
+# Strongest tier of each frontier family — NOT the cost-optimized targets.
+judges:
+  - judge_id: judge_gpt
+    provider: openai
+    snapshot: "<freeze-at-run-start>"  # strongest GPT-5.2 / 5.3 available at run start
+    judges_targets_from_families: [anthropic, google, open_generalist, medical_specialist]
+  - judge_id: judge_claude
+    provider: anthropic
+    snapshot: "claude-opus-4-7"        # Opus tier, not Haiku
+    judges_targets_from_families: [openai, google, open_generalist, medical_specialist]
+  - judge_id: judge_gemini
+    provider: google
+    snapshot: "<freeze-at-run-start>"  # Gemini 3 Pro or strongest available
+    judges_targets_from_families: [openai, anthropic, open_generalist, medical_specialist]
+
+judging_rules:
+  rationale: >
+    Each frontier target is judged by the two non-self families to avoid
+    in-family bias. Open and specialist targets are judged by all three.
+  per_response_judges_min: 2
+  per_response_judges_max: 3
+  judge_temperature: 0.0
+  judge_max_tokens: 1024
+
+# ---------- Lineup count ----------
+lineup_summary:
+  total_models_counted: 9
+  frontier: 3
+  medical_specialist: 4               # CheXOne, MedGemma 4B, MedGemma 27B, LLaVA-Med
+  open_generalist: 2
+  adaptive_eligible: 6
+  ablation_variants_excluded_from_count: ["chexone_4b_instruct"]
