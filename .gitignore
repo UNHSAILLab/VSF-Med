@@ -22,3 +22,10 @@ data/raw/                       # canonical dataset roots (PhysioNet-credentiale
 # Logs
 *.log
 nohup.out
+
+# Secrets — must NEVER be committed
+.env
+.env.*
+*.env
+secrets/
+**/credentials.json
