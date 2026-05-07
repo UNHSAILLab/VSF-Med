@@ -25,7 +25,12 @@ jupyter>=1.0.0
 ipython>=7.30.0
 
 # Open-weight model wrappers (CheXOne / MedGemma / LLaVA-Med / Qwen3.6 / Llama 4)
-torch>=2.4.0
+# IMPORTANT: torch must match the system NVIDIA driver. On driver 12.7 (CUDA 12.7),
+# install with the cu124 wheel index, otherwise PyTorch silently falls back to CPU
+# and inference is 100-400x slower.
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+torch>=2.6.0,<2.7
+torchvision>=0.21.0,<0.22
 transformers>=4.55.0
 accelerate>=1.0.0
 qwen-vl-utils>=0.0.10
