@@ -51,4 +51,18 @@ def _register_locals() -> None:
     register("llama_4_scout",        lambda: Llama4ScoutWrapper())
 
 
+def _register_frontier() -> None:
+    from .anthropic_target import AnthropicClaudeTargetWrapper
+    from .openai_target import OpenAIGPTTargetWrapper
+    from .gemini_target import GeminiTargetWrapper
+
+    register("claude_haiku_4_5",
+             lambda: AnthropicClaudeTargetWrapper(snapshot="claude-haiku-4-5-20251001"))
+    register("gpt_5_4_mini",
+             lambda: OpenAIGPTTargetWrapper(snapshot="gpt-5.4-mini-2026-03-17"))
+    register("gemini_3_flash",
+             lambda: GeminiTargetWrapper(snapshot="gemini-3-flash-preview"))
+
+
 _register_locals()
+_register_frontier()
