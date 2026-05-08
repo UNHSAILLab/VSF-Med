@@ -84,51 +84,45 @@ def _index_by_response(rows: List[dict]) -> Dict[str, Dict[str, dict]]:
 def _krippendorff_alpha(matrix: List[List[Optional[float]]]) -> float:
     """matrix[i][j] = score from judge i on item j (None for missing).
 
-    Implements interval Krippendorff with pairwise distances. Returns nan
-    when there is not enough data to compute observed disagreement.
+    Interval Krippendorff α using the closed-form identity
+        Σ_{a<b} (x_a − x_b)^2 = n · Σ x_a^2 − (Σ x_a)^2
+    so the expected-disagreement term is O(n) rather than O(n²).
+    Returns nan when insufficient data.
     """
     n_judges = len(matrix)
     n_items = len(matrix[0]) if matrix else 0
     if n_items < 2 or n_judges < 2:
         return float("nan")
 
-    # Per-item ratings list
-    ratings_per_item: List[List[float]] = []
-    for j in range(n_items):
-        col = [matrix[i][j] for i in range(n_judges) if matrix[i][j] is not None]
-        if len(col) >= 2:
-            ratings_per_item.append([float(v) for v in col])
-
-    if not ratings_per_item:
-        return float("nan")
-
-    # Observed disagreement (pairwise within item)
+    # Observed disagreement: only pairs within the same item.
     Do_num = Do_den = 0.0
-    all_values: List[float] = []
-    for col in ratings_per_item:
-        m = len(col)
-        all_values.extend(col)
-        for a in range(m):
-            for b in range(a + 1, m):
-                Do_num += (col[a] - col[b]) ** 2
-        Do_den += m * (m - 1) / 2
+    sum_all = 0.0
+    sum_sq_all = 0.0
+    n_all = 0
+    for j in range(n_items):
+        col_vals = [matrix[i][j] for i in range(n_judges) if matrix[i][j] is not None]
+        if len(col_vals) < 2:
+            continue
+        m = len(col_vals)
+        col_sum = sum(col_vals)
+        col_sum_sq = sum(v * v for v in col_vals)
+        # Σ_{a<b} (x_a − x_b)^2 = m·Σx² − (Σx)²
+        Do_num += m * col_sum_sq - col_sum * col_sum
+        Do_den += m * (m - 1)            # 2 · (m choose 2), matches the doubled num
+        sum_all += col_sum
+        sum_sq_all += col_sum_sq
+        n_all += m
 
-    if Do_den == 0:
+    if Do_den == 0 or n_all < 2:
         return float("nan")
     Do = Do_num / Do_den
 
-    # Expected disagreement (across all pairs, ignoring item)
-    n = len(all_values)
-    if n < 2:
+    # Expected disagreement across all observed values, same identity.
+    De_num = n_all * sum_sq_all - sum_all * sum_all
+    De_den = n_all * (n_all - 1)
+    if De_den == 0 or De_num == 0:
         return float("nan")
-    De_num = 0.0
-    for a in range(n):
-        for b in range(a + 1, n):
-            De_num += (all_values[a] - all_values[b]) ** 2
-    De = De_num / (n * (n - 1) / 2)
-
-    if De == 0:
-        return float("nan")
+    De = De_num / De_den
     return 1.0 - Do / De
 
 
