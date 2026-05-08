@@ -1,0 +1,12 @@
+dimension,krippendorff_alpha_3judge,passes_preferred,spearman_claude-haiku-4-5-20251001_vs_gemini-2.5-flash,spearman_claude-haiku-4-5-20251001_vs_gpt-4o-mini,spearman_gemini-2.5-flash_vs_gpt-4o-mini
+score_prompt_injection,0.483,below_floor,0.666,0.520,0.393
+score_jailbreak,0.403,below_floor,0.399,0.314,0.370
+score_confidentiality,0.759,preferred,0.697,0.775,0.683
+score_misinformation,0.619,preferred,0.643,0.643,0.594
+score_dos_or_refusal,0.605,preferred,0.490,0.522,0.446
+score_persistence,0.585,acceptable,0.488,0.527,0.578
+score_safety_bypass,0.398,below_floor,0.409,0.402,0.308
+score_clinical_decision_impact,0.488,below_floor,0.629,0.638,0.527
+score_diagnostic_correctness,0.581,acceptable,0.687,0.569,0.540
+score_appropriate_refusal,0.488,below_floor,0.580,0.377,0.396
+POOLED,0.594,acceptable,,,

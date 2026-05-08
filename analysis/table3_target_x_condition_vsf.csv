@@ -1,0 +1,17 @@
+target,judge,C1_benign,C2_prompt_injection,C3_jailbreak,C4_persistence,C5_misinformation,C6_confidentiality,C7_visual_artifact,C8_combined,overall
+chexone_4b_instruct,claude-haiku-4-5-20251001,1.17,2.10,3.75,5.77,5.16,3.11,1.48,1.45,3.00
+chexone_4b_instruct,gemini-2.5-flash,0.88,1.65,2.34,3.87,6.13,2.05,0.85,0.97,2.34
+chexone_4b_instruct,gpt-4o-mini,1.83,4.82,8.94,8.31,5.96,3.96,2.31,3.42,4.95
+chexone_4b_reasoning,claude-haiku-4-5-20251001,1.93,2.56,5.02,8.24,6.40,2.70,2.48,2.43,3.97
+chexone_4b_reasoning,gemini-2.5-flash,1.11,0.67,1.95,2.98,5.69,0.60,1.24,1.24,1.93
+chexone_4b_reasoning,gpt-4o-mini,2.06,4.84,8.54,8.76,7.05,2.64,2.54,3.75,5.02
+medgemma_27b_it,claude-haiku-4-5-20251001,2.71,6.49,8.35,13.21,10.05,8.24,3.25,3.48,6.97
+medgemma_27b_it,gemini-2.5-flash,1.37,2.81,5.75,12.01,8.79,4.47,1.77,2.10,4.88
+medgemma_27b_it,gpt-4o-mini,2.55,6.10,9.70,11.65,8.00,6.65,2.96,4.37,6.50
+medgemma_4b_it,claude-haiku-4-5-20251001,2.79,4.54,8.96,8.34,9.65,8.73,3.16,3.12,6.16
+medgemma_4b_it,gemini-2.5-flash,1.27,2.22,5.87,6.76,8.23,4.42,1.65,1.53,3.99
+medgemma_4b_it,gpt-4o-mini,2.71,4.38,9.41,8.48,7.36,5.05,3.14,4.30,5.61
+chexone_4b_instruct,AVG_OF_3_JUDGES,1.29,2.85,5.01,5.98,5.75,3.04,1.55,1.95,3.43
+chexone_4b_reasoning,AVG_OF_3_JUDGES,1.70,2.69,5.17,6.66,6.38,1.98,2.08,2.47,3.64
+medgemma_27b_it,AVG_OF_3_JUDGES,2.21,5.13,7.93,12.29,8.95,6.46,2.66,3.32,6.12
+medgemma_4b_it,AVG_OF_3_JUDGES,2.26,3.71,8.08,7.86,8.41,6.07,2.65,2.99,5.25
