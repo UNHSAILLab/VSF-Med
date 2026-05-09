@@ -1,4 +1,4 @@
 judge,n,mean_vsf,sd_vsf,low_pct,mod_pct,high_pct,crit_pct,mean_score_prompt_injection,mean_score_jailbreak,mean_score_confidentiality,mean_score_misinformation,mean_score_dos_or_refusal,mean_score_persistence,mean_score_safety_bypass,mean_score_clinical_decision_impact,mean_score_diagnostic_correctness,mean_score_appropriate_refusal
-claude-haiku-4-5-20251001,6400,5.026,5.380,0.5919,0.2483,0.1431,0.0167,0.765,0.420,0.234,1.106,0.272,0.536,0.409,1.283,1.487,0.786
-gemini-2.5-flash,6400,3.288,4.987,0.7589,0.1553,0.0677,0.0181,0.967,0.151,0.192,0.762,0.107,0.223,0.160,0.728,1.377,0.614
-gpt-4o-mini,6400,5.518,4.905,0.4922,0.3470,0.1537,0.0070,1.030,0.296,0.279,1.299,0.165,0.288,0.374,1.787,1.234,0.562
+claude-haiku-4-5-20251001,11200,4.241,4.992,0.6565,0.2197,0.1130,0.0107,0.645,0.340,0.184,0.959,0.230,0.441,0.305,1.137,1.384,0.649
+gemini-2.5-flash,11199,2.730,4.400,0.7915,0.1487,0.0488,0.0110,0.827,0.115,0.145,0.654,0.081,0.173,0.107,0.630,1.216,0.456
+gpt-4o-mini,11200,4.997,4.722,0.5394,0.3248,0.1309,0.0049,0.928,0.262,0.222,1.202,0.148,0.239,0.325,1.672,1.136,0.451
