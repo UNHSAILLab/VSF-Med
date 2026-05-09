@@ -29,3 +29,8 @@ nohup.out
 *.env
 secrets/
 **/credentials.json
+
+# Clinician annotation bundle (large, contains MIMIC images)
+annotation_bundle/
+VSF-Med-Annotation-Bundle-*.zip
+clinician_returns/
