@@ -1,0 +1,239 @@
+{
+  "lofo": {
+    "pooled_alpha_lofo": 0.5739450250443788,
+    "per_dim_alpha_lofo": {
+      "score_prompt_injection": 0.4716310700276064,
+      "score_jailbreak": 0.36805391011357214,
+      "score_confidentiality": 0.7414454827725673,
+      "score_misinformation": 0.6131364867528759,
+      "score_dos_or_refusal": 0.546136472040389,
+      "score_persistence": 0.5487141049300939,
+      "score_safety_bypass": 0.3266239747492725,
+      "score_clinical_decision_impact": 0.4785537662798548,
+      "score_diagnostic_correctness": 0.5652965396572995,
+      "score_appropriate_refusal": 0.459700510573964
+    },
+    "per_target_lofo": [
+      {
+        "target": "chexone_4b_instruct",
+        "tier": "specialist",
+        "n": 1600,
+        "mean_vsf_lofo": 3.4291666666666663,
+        "low_pct": 66.5625,
+        "mod_pct": 27.437499999999996,
+        "high_pct": 5.8125,
+        "crit_pct": 0.1875
+      },
+      {
+        "target": "chexone_4b_reasoning",
+        "tier": "specialist",
+        "n": 1600,
+        "mean_vsf_lofo": 3.641666666666667,
+        "low_pct": 64.0,
+        "mod_pct": 30.375000000000004,
+        "high_pct": 5.5625,
+        "crit_pct": 0.0625
+      },
+      {
+        "target": "medgemma_27b_it",
+        "tier": "specialist",
+        "n": 1600,
+        "mean_vsf_lofo": 6.118541666666667,
+        "low_pct": 43.875,
+        "mod_pct": 36.875,
+        "high_pct": 15.812499999999998,
+        "crit_pct": 3.4375000000000004
+      },
+      {
+        "target": "medgemma_4b_it",
+        "tier": "specialist",
+        "n": 1600,
+        "mean_vsf_lofo": 5.253541666666666,
+        "low_pct": 49.375,
+        "mod_pct": 35.5,
+        "high_pct": 14.4375,
+        "crit_pct": 0.6875
+      },
+      {
+        "target": "target_claude-haiku-4-5-20251001",
+        "tier": "frontier",
+        "n": 1600,
+        "mean_vsf_lofo": 2.713125,
+        "low_pct": 73.125,
+        "mod_pct": 23.875,
+        "high_pct": 3.0,
+        "crit_pct": 0.0
+      },
+      {
+        "target": "target_gemini-3-flash-preview",
+        "tier": "frontier",
+        "n": 1599,
+        "mean_vsf_lofo": 4.614446529080675,
+        "low_pct": 54.47154471544715,
+        "mod_pct": 37.39837398373984,
+        "high_pct": 7.8173858661663544,
+        "crit_pct": 0.31269543464665417
+      },
+      {
+        "target": "target_gpt-5.4-mini-2026-03-17",
+        "tier": "frontier",
+        "n": 1600,
+        "mean_vsf_lofo": 2.2965625,
+        "low_pct": 79.0625,
+        "mod_pct": 17.4375,
+        "high_pct": 3.5000000000000004,
+        "crit_pct": 0.0
+      }
+    ],
+    "rho_lofo": 0.5746813121440641,
+    "auroc_lofo": 0.827296,
+    "n_judge_scores_lofo": 28797,
+    "n_dropped": 4799
+  },
+  "mixed_effects": {
+    "n_observations": 11199,
+    "n_case_groups": 200,
+    "formula": "mean_vsf ~ tier * condition_id  with (1|case_id)",
+    "fixed_effects": [
+      {
+        "term": "Intercept",
+        "coef": 1.8605555666667248,
+        "se": 0.1593958767327525,
+        "ci_low": 1.548145388986344,
+        "ci_high": 2.1729657443471058,
+        "pval": 1.76075458771168e-31
+      },
+      {
+        "term": "tier[T.specialist]",
+        "coef": 0.005694443833250295,
+        "se": 0.18720020906097476,
+        "ci_low": -0.36121122382462895,
+        "ci_high": 0.37260011149112954,
+        "pval": 0.975732889187427
+      },
+      {
+        "term": "condition_id[T.C2_prompt_injection]",
+        "coef": 1.363888880633271,
+        "se": 0.20012544143960612,
+        "ci_low": 0.9716502230214633,
+        "ci_high": 1.7561275382450785,
+        "pval": 9.41524402154334e-12
+      },
+      {
+        "term": "condition_id[T.C3_jailbreak]",
+        "coef": 2.9011110963332754,
+        "se": 0.20012544143960617,
+        "ci_low": 2.5088724387214674,
+        "ci_high": 3.2933497539450833,
+        "pval": 1.2755500352060854e-47
+      },
+      {
+        "term": "condition_id[T.C4_persistence]",
+        "coef": 1.7061111009666128,
+        "se": 0.20012544143960614,
+        "ci_low": 1.313872443354805,
+        "ci_high": 2.0983497585784203,
+        "pval": 1.525348968934847e-17
+      },
+      {
+        "term": "condition_id[T.C5_misinformation]",
+        "coef": 3.0861111018999376,
+        "se": 0.20012544143960612,
+        "ci_low": 2.69387244428813,
+        "ci_high": 3.478349759511745,
+        "pval": 1.184725797844506e-53
+      },
+      {
+        "term": "condition_id[T.C6_confidentiality]",
+        "coef": 0.7022222125666052,
+        "se": 0.20012544143960614,
+        "ci_low": 0.3099835549547975,
+        "ci_high": 1.0944608701784129,
+        "pval": 0.0004499467132045452
+      },
+      {
+        "term": "condition_id[T.C7_visual_artifact]",
+        "coef": 0.21374396930100623,
+        "se": 0.20021020651569024,
+        "ci_low": -0.1786608248070731,
+        "ci_high": 0.6061487634090855,
+        "pval": 0.28570199157847675
+      },
+      {
+        "term": "condition_id[T.C8_combined]",
+        "coef": 0.4311111070332703,
+        "se": 0.20012544143960612,
+        "ci_low": 0.038872449421462674,
+        "ci_high": 0.823349764645078,
+        "pval": 0.03122414575762897
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C2_prompt_injection]",
+        "coef": 0.36652777531676733,
+        "se": 0.2647410745331106,
+        "ci_low": -0.1523551959965635,
+        "ci_high": 0.8854107466300982,
+        "pval": 0.16621262314221863
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C3_jailbreak]",
+        "coef": 1.7813888975667664,
+        "se": 0.2647410745331106,
+        "ci_low": 1.2625059262534357,
+        "ci_high": 2.300271868880097,
+        "pval": 1.7107174581946583e-11
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C4_persistence]",
+        "coef": 4.625555559158428,
+        "se": 0.2647410745331105,
+        "ci_low": 4.106672587845098,
+        "ci_high": 5.144438530471759,
+        "pval": 2.3414883507601387e-68
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C5_misinformation]",
+        "coef": 2.420972201100107,
+        "se": 0.2647410745331105,
+        "ci_low": 1.9020892297867764,
+        "ci_high": 2.939855172413438,
+        "pval": 5.980709798850495e-20
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C6_confidentiality]",
+        "coef": 1.8181944539834332,
+        "se": 0.2647410745331106,
+        "ci_low": 1.2993114826701024,
+        "ci_high": 2.337077425296764,
+        "pval": 6.518969905140966e-12
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C7_visual_artifact]",
+        "coef": 0.15542269724902938,
+        "se": 0.2648051567220776,
+        "ci_low": -0.3635858728467274,
+        "ci_high": 0.6744312673447861,
+        "pval": 0.5572491818722716
+      },
+      {
+        "term": "tier[T.specialist]:condition_id[T.C8_combined]",
+        "coef": 0.38347221614176624,
+        "se": 0.2647410745331105,
+        "ci_low": -0.13541075517156448,
+        "ci_high": 0.902355187455097,
+        "pval": 0.1474827873326045
+      },
+      {
+        "term": "Group Var",
+        "coef": 0.08958674192055123,
+        "se": 0.010870170781175545,
+        "ci_low": 0.06828159868364754,
+        "ci_high": 0.11089188515745492,
+        "pval": 1.7003493039111704e-16
+      }
+    ],
+    "random_effect_case_var": 1.0763898727409107,
+    "loglik": -30000.23409414485,
+    "aic": NaN
+  }
+}
