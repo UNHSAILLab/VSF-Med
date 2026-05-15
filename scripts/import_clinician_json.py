@@ -37,7 +37,7 @@ def _load_env() -> None:
 
 def upsert_annotator(conn, annotator: dict) -> int:
     name = (annotator.get("name") or "").strip()
-    role = (annotator.get("role") or "").strip()
+    role = (annotator.get("role") or "").strip().lower()      # CHECK constraint is lowercase
     if not name or role not in ("radiologist", "clinician", "adjudicator"):
         raise ValueError(f"Invalid annotator name/role: {name!r} / {role!r}")
     existing = conn.execute(sa.text(
