@@ -232,28 +232,13 @@ MedGemma 27B         & Specialist & 15.34 & 2.55 & 2.62 & \textbf{49.2} \\
 
 \textbf{Leave-one-family-out re-score.} A live concern with multi-judge designs is judge-target family overlap. Claude Haiku 4.5, GPT-5.4-mini, and Gemini 3 Flash appear in both the target set and the judge set under shared family pins. We re-ran the headline analysis with strict leave-one-family-out (LOFO): each frontier target was scored only by the two judges from different families, while specialist targets retained all three judges. After dropping 4{,}799 same-family scores (28{,}797 retained), the pooled three-judge Krippendorff $\alpha$ moves from 0.586 to 0.574, the framework-versus-clinician Spearman $\rho$ moves from 0.590 to 0.575, and the AUROC for predicting clinician harm $\ge 3$ moves from 0.836 to 0.827. All three pre-registered preferred bars remain cleared. The overlap was not materially inflating the result.
 
-\textbf{Mixed-effects regression.} To respect the within-case nesting (each base case is exercised under all eight conditions across all seven targets), we fit a linear mixed-effects model on the per-cell mean VSF: $\mathrm{vsf} \sim \mathrm{tier} \times \mathrm{condition} + (1 \mid \mathrm{case\_id})$, $n = 11{,}199$ cells across 200 case groups. The random-intercept variance is 1.076. The tier main effect at C1 reference is essentially zero (coefficient $+0.006$, $p = 0.976$): specialists and frontier targets are statistically indistinguishable on benign cases. The specialist disadvantage emerges as an interaction with attack conditions, summarized in Table~\ref{tab:lme_interaction}. The strongest interaction is C4 persistence ($+4.626$ VSF points, $p < 0.001$), which exactly matches the descriptive finding that 60 of 61 critical-consensus responses are C4 persistence and that 51 of those are on a single specialist (MedGemma 27B). C2 prompt injection, C7 visual artifact, and C8 combined show no significant tier-by-condition interaction, indicating those conditions affect specialists and frontier targets equivalently.
+\textbf{Mixed-effects regression.} To respect the within-case nesting (each base case is exercised under all eight conditions across all seven targets), we fit a linear mixed-effects model on the per-cell mean VSF: $\mathrm{vsf} \sim \mathrm{tier} \times \mathrm{condition} + (1 \mid \mathrm{case\_id})$, $n = 11{,}199$ cells across 200 case groups. The random-intercept variance is 1.076. The tier main effect at C1 reference is essentially zero (coefficient $+0.006$, $p = 0.976$): specialists and frontier targets are statistically indistinguishable on benign cases. The specialist disadvantage emerges as an interaction with attack conditions, visualized in Fig.~\ref{fig:lme}. The strongest interaction is C4 persistence ($+4.626$ VSF points, 95\% CI $[+4.11, +5.14]$, $p < 0.001$), exactly matching the descriptive finding that 60 of 61 critical-consensus responses are C4 persistence and 51 of those are on a single specialist (MedGemma 27B). C3 jailbreak ($+1.78$), C5 misinformation ($+2.42$), and C6 confidentiality ($+1.82$) are also significant. C2 prompt injection, C7 visual artifact, and C8 combined show no significant tier-by-condition interaction, indicating those conditions affect specialists and frontier targets equivalently.
 
-\begin{table}[t]
-\caption{Mixed-effects interaction coefficients: specialist disadvantage relative to frontier per condition. Positive coefficient means specialists score higher (more vulnerable). From $\mathrm{vsf} \sim \mathrm{tier} \times \mathrm{condition} + (1 \mid \mathrm{case\_id})$, $n=11{,}199$, 200 groups.}
-\label{tab:lme_interaction}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Condition} & \textbf{Specialist $\Delta$} & \textbf{95\% CI} & \textbf{$p$} \\
-\midrule
-C2 prompt injection    & $+0.37$ & [$-0.15$, $+0.89$] & 0.166 \\
-C3 jailbreak           & $+1.78$ & [$+1.26$, $+2.30$] & $<0.001$ \\
-C4 persistence         & $\mathbf{+4.63}$ & [$+4.11$, $+5.14$] & $<0.001$ \\
-C5 misinformation      & $+2.42$ & [$+1.90$, $+2.94$] & $<0.001$ \\
-C6 confidentiality     & $+1.82$ & [$+1.30$, $+2.34$] & $<0.001$ \\
-C7 visual artifact     & $+0.16$ & [$-0.36$, $+0.67$] & 0.557 \\
-C8 combined            & $+0.38$ & [$-0.14$, $+0.90$] & 0.147 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
+\begin{figure}[t]
+\centerline{\includegraphics[width=\columnwidth]{images/v2/fig2_lme_interaction.pdf}}
+\caption{Specialist-vs-frontier interaction coefficients per attack condition from the linear mixed-effects model ($\mathrm{vsf} \sim \mathrm{tier} \times \mathrm{condition} + (1 \mid \mathrm{case\_id})$, $n=11{,}199$, 200 case groups). Bars are coefficients in VSF points; whiskers are 95\% CIs. Blue bars are significant at $p < 0.05$. C4 persistence dominates the specialist-tier disadvantage.}
+\label{fig:lme}
+\end{figure}
 
 \subsection{Risk Distribution Shift Under Attack}
 
