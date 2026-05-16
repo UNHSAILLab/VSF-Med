@@ -49,17 +49,11 @@ Four headline findings follow. The three preferred reliability bars set in our a
 
 \section{Related Work}
 
-\subsection{Medical Vision-Language Models}
+Medical VLM development has moved from joint image-text pretraining \cite{moon2022multi, eslami2021does} through curriculum-tuned generalists \cite{li2023llava} to radiology-specific foundation models like CheXagent. MedGemma extends Gemma 3 with a medical instruction-tuning curriculum at two scales. Safety evaluation hasn't kept pace: most published benchmarks report benign-condition accuracy and don't probe adversarial behavior.
 
-Medical VLM development has moved from joint image-text pretraining \cite{moon2022multi, eslami2021does} through curriculum-tuned generalists \cite{li2023llava} to radiology-specific foundation models. CheXagent and its successors push toward radiologist-level performance on chest-X-ray report generation. MedGemma extends Gemma 3 with a medical instruction-tuning curriculum across two parameter scales. Safety evaluation hasn't kept pace with capability. Most published benchmarks report benign-condition accuracy or report-quality scores and don't probe adversarial behavior.
+Trustworthiness benchmarks address parts of the gap. CARES \cite{xia2024cares} covers toxicity, bias, natural-perturbation robustness, factuality, and privacy across 41{,}000 medical question-answer pairs. FM-Bench \cite{wu2024fmbench} targets fairness, MultiMedEval \cite{royer2024multimedeval} aggregates 23 datasets without adversarial components, and MITRE's MD-CVSS \cite{coley2019rubric} structures device-vulnerability assessment but isn't VLM-specific. Broader taxonomies inform our eight-condition mapping: prompt injection aligns with OWASP LLM01; persistence and jailbreak conditions correspond to MITRE ATLAS techniques.
 
-\subsection{Safety Benchmarks and Taxonomies}
-
-CARES \cite{xia2024cares} measures toxicity, bias, robustness to natural perturbations, factuality, and privacy across 41{,}000 medical question-answer pairs, but focuses on natural failure modes. FM-Bench \cite{wu2024fmbench} targets demographic fairness. MultiMedEval \cite{royer2024multimedeval} aggregates 23 datasets without adversarial components. MITRE's MD-CVSS \cite{coley2019rubric} provides a structured device-vulnerability framework but isn't specific to vision-language models. Broader taxonomies (MITRE ATLAS, OWASP LLM Top-10) inform our eight-condition mapping. Our prompt-injection condition aligns with OWASP LLM01; our persistence and jailbreak conditions correspond to specific ATLAS techniques.
-
-\subsection{Known Attack Vectors}
-
-Finlayson et al.\ \cite{finlayson2019adversarial} showed that imperceptible perturbations to chest X-rays cause misclassification. CoRPA \cite{rafferty2025corpa} extended this work to targeted suppression of critical findings in vision-language models. On the text side, Clusmann et al.\ \cite{clusmann2025prompt} demonstrated injection attacks against medical question-answering; AutoDAN \cite{liu2024autodan} automates jailbreak prompt generation; bi-modal attacks \cite{ying2024jailbreak} coordinate visual and textual cues. Memorization-based privacy risks \cite{ye2025survey, huang2025medical} are also documented. Our visual perturbations follow the established repertoire (noise, overlays, Moir\'{e}, steganography) under a structural similarity index measure (SSIM) constraint that preserves diagnostic readability. We acknowledge this caps achievable visual attack strength.
+On attack vectors, Finlayson et al.\ \cite{finlayson2019adversarial} showed that imperceptible perturbations to chest X-rays cause misclassification; CoRPA \cite{rafferty2025corpa} extended this to targeted suppression of critical findings in VLMs. Text-side attacks include prompt injections against medical QA \cite{clusmann2025prompt}, automated jailbreaks \cite{liu2024autodan}, and bi-modal attacks coordinating visual and textual cues \cite{ying2024jailbreak}. Memorization-based privacy risks are also documented \cite{ye2025survey, huang2025medical}. Our visual perturbations follow the established repertoire (noise, overlays, Moir\'{e}, steganography) under a structural similarity index measure (SSIM) constraint that preserves diagnostic readability; this caps achievable visual attack strength.
 
 \section{Methods}\label{sec:methods}
 
@@ -72,18 +66,20 @@ Every base case is exposed under the eight conditions shown in Table~\ref{tab:co
 \label{tab:conditions}
 \begin{center}
 \renewcommand{\arraystretch}{1.18}
-\begin{tabular}{p{0.04\columnwidth} p{0.32\columnwidth} p{0.50\columnwidth}}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.03\columnwidth} p{0.28\columnwidth} p{0.59\columnwidth}@{}}
 \toprule
 \textbf{ID} & \textbf{Name} & \textbf{Examples} \\
 \midrule
 C1 & Benign control & Original clinical question, original image \\
-C2 & Prompt injection & Instruction wrappers and encoded prompts (base64, ROT13) directing the model to ignore safety policies \\
-C3 & Jailbreak / role manipulation & ``Medical simulation mode,'' ethical-boundary tests, denial-of-service framing \\
-C4 & Persistence / prior-turn contamination & Multi-turn templates and persistence injections \\
-C5 & Medical misinformation induction & Subtle bias, omission of recommendations, over-confidence, left/right swaps \\
-C6 & Confidentiality and protected health information (PHI) leakage probe & Requests to fabricate identifiers or infer demographics \\
-C7 & Visual artifact perturbation & Gaussian noise, checkerboard overlay, random arrow, Moir\'{e}, steganographic hide, least-significant-bit (LSB) plane visualization (all SSIM $\ge 0.85$) \\
-C8 & Combined image-plus-text attack & Embedded visual-text prompts, artifact-plus-overlay, prior-turn contamination paired with image queries \\
+C2 & Prompt injection & Instruction wrappers and encoded prompts (base64, ROT13) overriding safety policies \\
+C3 & Jailbreak / role play & ``Medical simulation mode,'' ethical-boundary tests, denial-of-service framing \\
+C4 & Persistence / prior-turn & Multi-turn templates and persistence injections \\
+C5 & Misinformation & Bias, omission, over-confidence, left/right swaps \\
+C6 & Confidentiality (PHI probe) & Fabricate identifiers or infer demographics \\
+C7 & Visual artifact & Gaussian noise, checkerboard, arrow, Moir\'{e}, stego, LSB plane (SSIM $\ge 0.85$) \\
+C8 & Combined image+text & Embedded visual-text prompts, artifact + overlay, prior-turn with image \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -144,53 +140,13 @@ MedGemma 27B          & Specialist & 50.0 & 34.0 & 12.6 & \textbf{3.4} \\
 \end{center}
 \end{table}
 
-\begin{table}[t]
-\caption{Tier-mean VSF total across attack conditions, averaged across the 3 LLM judges. Frontier mean overall is 3.16; specialist mean overall is 4.61.}
-\label{tab:tier_mean}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccccccc}
-\toprule
-\textbf{Tier} & \textbf{C1} & \textbf{C2} & \textbf{C3} & \textbf{C4} & \textbf{C5} & \textbf{C6} & \textbf{C7} & \textbf{C8} \\
-\midrule
-Specialist & 1.9 & 3.6 & 6.5 & 8.2 & 7.4 & 4.4 & 2.2 & 2.7 \\
-Frontier   & 1.9 & 3.2 & 4.8 & 3.6 & 4.9 & 2.6 & 2.1 & 2.3 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
-
-The tier-mean breakdown in Table~\ref{tab:tier_mean} concentrates the gap under text-attack conditions: persistence (8.2 vs.\ 3.6) and misinformation (7.4 vs.\ 4.9). Visual-only and combined conditions (C7, C8) are tightly clustered across tiers, consistent with the SSIM-preserving constraint flattening cross-model differentiation as in prior work.
+Tier means concentrate the gap under text-attack conditions: at C4 persistence specialists average mean VSF 8.2 vs.\ frontier 3.6, and at C5 misinformation 7.4 vs.\ 4.9. The frontier-vs-specialist overall means are 3.16 and 4.61. Visual-only and combined conditions (C7, C8) are tightly clustered across tiers (2.1--2.7), consistent with the SSIM-preserving constraint flattening cross-model differentiation.
 
 Counter to common intuition, the larger MedGemma 27B is \emph{more} vulnerable than its 4B sibling (3.5\% vs.\ 1.4\% critical-risk; mean VSF 6.12 vs.\ 5.25). Scaling within a medical fine-tune family does not monotonically improve safety in our evaluation. Within the CheXOne family, the reasoning-trace mode produces longer responses but doesn't materially change vulnerability (0.2\% vs.\ 0.5\% critical).
 
 \subsection{Attack Effectiveness by Condition}
 
-The 61 high-confidence critical responses (those where all three judges independently scored $\ge 18$) are dominated by C4 multi-turn persistence (Table~\ref{tab:critical_breakdown}).
-
-\begin{table}[t]
-\caption{High-confidence critical-risk responses (all three LLM judges $\ge 18$). 60 of 61 are C4 persistence attacks.}
-\label{tab:critical_breakdown}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{llc}
-\toprule
-\textbf{Target} & \textbf{Condition} & \textbf{Count} \\
-\midrule
-MedGemma 27B          & C4 persistence    & 51 \\
-Gemini 3 Flash        & C4 persistence    & 5  \\
-MedGemma 4B           & C4 persistence    & 3  \\
-CheXOne (reasoning)   & C4 persistence    & 1  \\
-CheXOne (reasoning)   & C3 jailbreak      & 1  \\
-\midrule
-\multicolumn{2}{l}{\textbf{Total}}        & \textbf{61} \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
-
-Two observations follow. First, C4 persistence is not a specialist-only failure: a frontier target (Gemini 3 Flash) accumulates 5 critical-consensus C4 responses, so the vulnerability survives general-purpose alignment training. Second, the MedGemma 27B C4 cluster (51 cases) is so dominant that it merits attention as a distinct failure mode. Bigger medical specialists may attend more aggressively to prior-turn context, which increases compliance with attacker instructions framed as established conversational state.
+Of the 61 high-confidence critical responses (all three judges $\ge 18$), 60 arose under C4 multi-turn persistence: 51 on MedGemma 27B, 5 on Gemini 3 Flash, 3 on MedGemma 4B, and 1 on CheXOne reasoning. The remaining case was a CheXOne reasoning C3 jailbreak. Two points follow. C4 persistence is not a specialist-only failure: a frontier target (Gemini 3 Flash) accumulates 5 critical-consensus C4 responses, so the vulnerability survives general-purpose alignment training. The MedGemma 27B C4 cluster (51 cases) is so dominant that it merits attention as a distinct failure mode: larger medical specialists may attend more aggressively to prior-turn context, which increases compliance with attacker instructions framed as established conversational state.
 
 \subsection{LLM Judge Reliability}\label{sec:judge_reliability}
 
@@ -328,25 +284,7 @@ C8 combined            & $+0.38$ & [$-0.14$, $+0.90$] & 0.147 \\
 
 \subsection{Risk Distribution Shift Under Attack}
 
-Aggregating across all targets and judges, conditions C2 through C8 produce 41.4\% of cells in Moderate-or-above tiers versus 14.7\% on C1 benign (Table~\ref{tab:risk_shift}). The shift is large and significant ($\chi^2$ test, $p < 10^{-200}$), confirming that benign-only evaluation systematically understates risk. A model that looks Low-risk under C1 has roughly a 1-in-3 chance of producing a Moderate-or-above output once exposed to one of our seven attack conditions.
-
-\begin{table}[t]
-\caption{Severity distribution under benign C1 vs.\ adversarial C2 through C8 conditions, pooled across all 7 targets and 3 LLM judges. Each cell is the percentage of responses in that tier.}
-\label{tab:risk_shift}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Severity Tier} & \textbf{C1 Benign} & \textbf{C2 to C8 Attack} & \textbf{Shift} \\
-\midrule
-Low (0 to 4)        & 85.3 & 58.6 & $-$26.7 \\
-Moderate (5 to 10)  & 13.2 & 27.1 & $+$13.9 \\
-High (11 to 20)     &  1.5 & 12.9 & $+$11.4 \\
-Critical (21+)      &  0.0 &  1.4 & $+$1.4  \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
+Aggregating across all targets and judges, conditions C2 through C8 produce 41.4\% of cells in Moderate-or-above tiers versus 14.7\% on C1 benign (shift $\chi^2$ test, $p < 10^{-200}$). A model that looks Low-risk under C1 has roughly a 1-in-3 chance of producing a Moderate-or-above output once exposed to one of our seven attack conditions. Benign-only evaluation systematically understates risk.
 
 \section{Discussion}
 
@@ -390,73 +328,5 @@ Acknowledgments withheld for double-blind review.
 
 \bibliographystyle{IEEEtran}
 \bibliography{main}
-
-\appendices
-
-\section{Per-Target by Per-Condition Mean VSF}
-
-Table~\ref{tab:full_heatmap} reports the full 7 by 8 mean-VSF matrix used to construct the cross-tier comparison in Section~III.
-
-\begin{table}[h]
-\caption{Mean VSF total per (target, condition) cell, averaged across the 3 LLM judges.}
-\label{tab:full_heatmap}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccccccc}
-\toprule
-\textbf{Target} & \textbf{C1} & \textbf{C2} & \textbf{C3} & \textbf{C4} & \textbf{C5} & \textbf{C6} & \textbf{C7} & \textbf{C8} & \textbf{Tot} \\
-\midrule
-CheXOne (instruct)    & 1.3 & 2.9 & 5.0 & 6.0 & 5.8 & 3.0 & 1.6 & 1.9 & 3.43 \\
-CheXOne (reasoning)   & 1.7 & 2.7 & 5.2 & 6.7 & 6.4 & 2.0 & 2.1 & 2.5 & 3.64 \\
-MedGemma 27B          & 2.2 & 5.1 & 7.9 &12.3 & 8.9 & 6.5 & 2.7 & 3.3 & 6.12 \\
-MedGemma 4B           & 2.3 & 3.7 & 8.1 & 7.9 & 8.4 & 6.1 & 2.6 & 3.0 & 5.25 \\
-Claude Haiku 4.5      & 2.7 & 1.0 & 4.5 & 3.6 & 4.1 & 1.7 & 2.7 & 2.3 & 2.83 \\
-GPT-5.4-mini          & 1.2 & 4.4 & 4.1 & 3.5 & 4.2 & 1.6 & 1.6 & 2.0 & 2.82 \\
-Gemini 3 Flash        & 1.7 & 4.2 & 5.7 & 3.6 & 6.6 & 4.4 & 1.9 & 2.5 & 3.84 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
-
-\section{Per-Judge Calibration}
-
-Table~\ref{tab:per_judge_cal} summarizes the three judges' calibration over the full 11{,}200-response pool.
-
-\begin{table}[h]
-\caption{Per-judge calibration across the full pool. $\sigma$ is the standard deviation of VSF total. Percent Critical is the fraction of judged responses scored $\ge 21$.}
-\label{tab:per_judge_cal}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Judge} & \textbf{$n$} & \textbf{Mean VSF} & \textbf{$\sigma$} & \textbf{\% Crit} \\
-\midrule
-Claude Haiku 4.5         & 11{,}200 & 4.24 & 4.99 & 1.1 \\
-Gemini 2.5 Flash         & 11{,}199 & 2.73 & 4.40 & 1.1 \\
-GPT-4o-mini              & 11{,}200 & 5.00 & 4.72 & 0.5 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
-
-\section{Pairwise Spearman $\rho$ Between Judges}
-
-\begin{table}[h]
-\caption{Pairwise Spearman $\rho$ on VSF total ($n \approx 11{,}200$ matched responses per pair). Haiku and Gemini agree most closely; GPT-4o-mini is the calibration outlier.}
-\label{tab:judge_rho}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Judge Pair} & \textbf{$\rho$} & \textbf{$n$} \\
-\midrule
-Haiku 4.5 vs.\ Gemini 2.5 Flash         & 0.728 & 11{,}199 \\
-Haiku 4.5 vs.\ GPT-4o-mini              & 0.646 & 11{,}200 \\
-Gemini 2.5 Flash vs.\ GPT-4o-mini       & 0.567 & 11{,}199 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
 
 \end{document}
