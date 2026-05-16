@@ -45,3 +45,6 @@ secrets/
 # ---------- Clinician annotation bundle (contains MIMIC images) ----------
 annotation_bundle/
 VSF-Med-Annotation-Bundle-*.zip
+
+# ---------- HuggingFace dataset build artifact ----------
+hf_dataset/
