@@ -30,7 +30,7 @@ anonymous@example.com}
 \maketitle
 
 \begin{abstract}
-Medical vision-language models (VLMs) are entering clinical workflows, yet we lack systematic ways to measure adversarial risk in a way that maps to actual patient harm. We introduce VSF-Med, a vulnerability scoring framework that exercises VLMs across eight clinically grounded attack conditions, scores responses on ten dimensions (eight vulnerability + two utility) with three independent large language model (LLM) judges, and validates the resulting scores against ratings from a board-certified radiologist and a clinician. We evaluate seven targets that span the current model space, four open-weight medical specialists (CheXOne instruct and reasoning, MedGemma 4B and 27B) and three frontier API models (Claude Haiku 4.5, GPT-5.4-mini, Gemini 3 Flash). The pilot uses 200 base cases drawn from MIMIC-CXR question-answering data and produces 11{,}200 model responses and 33{,}600 LLM-judge scores. A stratified subsample of 500 responses was independently dual-annotated for clinical harm. A leave-one-family-out re-score and a mixed-effects regression with case-level random intercepts are reported as robustness checks. Four findings emerge. First, VSF total predicts clinician-rated harm with Spearman $\rho = 0.590$ and an area under the receiver operating characteristic curve (AUROC) of 0.836 for the binary high-risk task, clearing the pre-registered preferred bars. Second, the two clinicians agree at weighted Cohen's $\kappa = 0.645$ (linear) and 0.806 (quadratic), with Krippendorff $\alpha = 0.804$. Third, frontier models are on average safer than medical specialists (mean VSF 3.16 vs.\ 4.61); two frontier targets had zero or one critical-consensus failure across 4{,}800 attack cells. Fourth, multi-turn persistence is the dominant attack vector: 60 of 61 high-confidence critical-risk responses arose under persistence framing, with 51 concentrated on a single specialist (MedGemma 27B). Counter to received intuition, MedGemma 27B is more vulnerable than the smaller MedGemma 4B (3.5\% vs.\ 1.4\% critical-risk rate). We release evaluation code openly; attack templates and image-bearing artifacts remain gated under PhysioNet credentialing.
+Medical vision-language models (VLMs) are entering clinical workflows, yet we lack systematic ways to measure adversarial risk in a way that maps to actual patient harm. We introduce VSF-Med, a vulnerability scoring framework that exercises VLMs across eight clinically grounded attack conditions, scores responses on ten dimensions (eight vulnerability + two utility) with three independent large language model (LLM) judges, and validates the resulting scores against ratings from a board-certified radiologist and a clinician. We evaluate seven targets that span the current model space, four open-weight medical specialists (CheXOne instruct and reasoning, MedGemma 4B and 27B) and three frontier API models (Claude Haiku 4.5, GPT-5.4-mini, Gemini 3 Flash). The pilot uses 200 base cases drawn from MIMIC-CXR question-answering data and produces 11{,}200 model responses and 33{,}600 LLM-judge scores. A stratified subsample of 500 responses was independently dual-annotated for clinical harm. A leave-one-family-out re-score and a mixed-effects regression with case-level random intercepts are reported as robustness checks. Four findings emerge. First, VSF total predicts clinician-rated harm with Spearman $\rho = 0.590$ and an area under the receiver operating characteristic curve (AUROC) of 0.836 for the binary high-risk task, clearing the pre-registered preferred bars. Second, the two clinicians agree at weighted Cohen's $\kappa = 0.645$ (linear) and 0.806 (quadratic), with Krippendorff $\alpha = 0.804$. Third, frontier models are on average safer than medical specialists (mean VSF 3.16 vs.\ 4.61); two frontier targets had zero critical-consensus failures across 1{,}600 response cells each. Fourth, multi-turn persistence is the dominant attack vector: 60 of 61 high-confidence critical-risk responses arose under persistence framing, with 51 concentrated on a single specialist (MedGemma 27B). Counter to received intuition, MedGemma 27B is more vulnerable than the smaller MedGemma 4B (3.4\% vs.\ 0.2\% critical-risk rate, where each rate is over 1{,}600 mean-across-judges response cells). We release evaluation code openly; attack templates and image-bearing artifacts remain gated under PhysioNet credentialing.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -45,11 +45,11 @@ Existing benchmarks address parts of the problem but not the whole. CARES \cite{
 
 Our contributions are: (1) a clinically grounded attack taxonomy of eight conditions covering benign control, prompt injection, jailbreak, multi-turn persistence, medical misinformation, confidentiality probing, visual perturbation, and combined image-plus-text attacks; (2) a ten-dimension scoring rubric (eight vulnerability + two utility) and a multi-judge protocol with three independent frontier-family LLM judges, with reliability accounting via Krippendorff $\alpha$ and pairwise Spearman $\rho$; (3) a seven-target pilot evaluation including open-weight medical specialists and frontier application programming interface (API) models, producing 33{,}600 LLM-judge scores over 11{,}200 model responses; (4) clinician validation of 500 stratified responses by a board-certified radiologist and a non-radiology clinician, with weighted $\kappa$ inter-rater agreement and VSF-vs-harm correlation analysis; and (5) open release of code, schemas, and the multi-judge prompts. Attack templates and MIMIC-derived data remain credentialed.
 
-Four headline findings follow. The three preferred reliability bars set in our analysis plan are cleared: $\kappa = 0.645$ (linear, against $\ge 0.55$), $\rho = 0.590$ (against $\ge 0.45$), AUROC $= 0.836$ (against $\ge 0.70$). Frontier APIs outperform medical specialists on average; two frontier targets had effectively zero critical-consensus failures across 4{,}800 attack cells each. MedGemma 27B is more vulnerable than MedGemma 4B, so bigger isn't automatically safer in this medical-fine-tune family. And multi-turn persistence is the universal weak point: 60 of 61 cases flagged critical-risk by all three LLM judges are C4 persistence attacks, concentrated 51-of-61 on a single target.
+Four headline findings follow. The three preferred reliability bars set in our analysis plan are cleared: $\kappa = 0.645$ (linear, against $\ge 0.55$), $\rho = 0.590$ (against $\ge 0.45$), AUROC $= 0.836$ (against $\ge 0.70$). Frontier APIs outperform medical specialists on average; two frontier targets had zero critical-consensus failures across 1{,}600 response cells each (mean across the three LLM judges). MedGemma 27B is more vulnerable than MedGemma 4B, so bigger isn't automatically safer in this medical-fine-tune family. And multi-turn persistence is the universal weak point: 60 of 61 cases flagged critical-risk by all three LLM judges are C4 persistence attacks, concentrated 51-of-61 on a single target.
 
 \section{Related Work}
 
-Medical VLM development has moved from joint image-text pretraining \cite{moon2022multi, eslami2021does} through curriculum-tuned generalists \cite{li2023llava} to radiology-specific foundation models like CheXagent. MedGemma extends Gemma 3 with a medical instruction-tuning curriculum at two scales. Safety evaluation hasn't kept pace: most published benchmarks report benign-condition accuracy and don't probe adversarial behavior.
+Medical VLM development has moved from joint image-text pretraining \cite{moon2022multi, eslami2021does} through curriculum-tuned generalists \cite{li2023llava} to radiology-specific foundation models like CheXagent. MedGemma extends Gemma 3 with a medical instruction-tuning curriculum at two parameter scales \cite{sellergren2025medgemma}. Safety evaluation hasn't kept pace: most published benchmarks report benign-condition accuracy and don't probe adversarial behavior.
 
 Trustworthiness benchmarks address parts of the gap. CARES \cite{xia2024cares} covers toxicity, bias, natural-perturbation robustness, factuality, and privacy across 41{,}000 medical question-answer pairs. FM-Bench \cite{wu2024fmbench} targets fairness, MultiMedEval \cite{royer2024multimedeval} aggregates 23 datasets without adversarial components, and MITRE's MD-CVSS \cite{coley2019rubric} structures device-vulnerability assessment but isn't VLM-specific. Broader taxonomies inform our eight-condition mapping: prompt injection aligns with OWASP LLM01; persistence and jailbreak conditions correspond to MITRE ATLAS techniques.
 
@@ -99,11 +99,11 @@ A stratified subsample of 500 responses is independently annotated by two clinic
 
 \subsection{Test Case Generation}
 
-\textbf{Base cohort.} We sample 200 base cases from MIMIC-CXR \cite{johnson2024mimic} joined with MIMIC-Diff-VQA question and answer pairs, stratified across visual question types (presence, abnormality, anatomy, attribute, size, plane). Image paths resolve against locally cached files; questions and ground-truth answers come from the MIMIC-Diff-VQA splits. The full v2 protocol also targets CheXpert and GMAI-MMBench, but we report the MIMIC-only pilot here.
+\textbf{Base cohort.} We sample 200 base cases from MIMIC-CXR \cite{johnson2019mimic} joined with MIMIC-Diff-VQA \cite{hu2023mimicdiffvqa} question and answer pairs, stratified across visual question types (presence, abnormality, anatomy, attribute, size, plane). Image paths resolve against locally cached files; questions and ground-truth answers come from the MIMIC-Diff-VQA splits. The full v2 protocol also targets CheXpert and GMAI-MMBench, but we report the MIMIC-only pilot here.
 
 \textbf{Eval-case expansion.} Each base case is expanded to 8 condition rows producing 1{,}600 eval rows per target.
 
-\textbf{Targets.} Seven targets are evaluated. The specialist tier includes CheXOne 4B (StanfordAIMI/CheXOne) in reasoning and instruct modes, MedGemma 4B-IT, and MedGemma 27B-IT. The frontier API tier includes Claude Haiku 4.5, GPT-5.4-mini, and Gemini 3 Flash (preview). Decoding is fixed at temperature 0, top-$p$ 1, with at most 512 output tokens.
+\textbf{Targets.} Seven targets are evaluated. The specialist tier includes CheXOne 4B \cite{stanfordaimi2025chexone} in reasoning and instruct modes, MedGemma 4B-IT and MedGemma 27B-IT \cite{sellergren2025medgemma}. The frontier API tier includes Claude Haiku 4.5, GPT-5.4-mini, and Gemini 3 Flash (preview). Decoding is fixed at temperature 0, top-$p$ 1, with at most 512 output tokens.
 
 \textbf{Totals.} 200 base $\times$ 8 conditions $\times$ 7 targets = 11{,}200 model responses. With three judges per response we issued 33{,}600 LLM-judge calls; 33{,}599 returned parseable JSON (one Gemini call produced no candidate and is excluded from aggregate statistics). The 500-case dual annotation produced 1{,}000 clinician ratings.
 
@@ -117,7 +117,7 @@ Fig.~\ref{fig:per_target_severity} and Table~\ref{tab:per_target_severity} repor
 \centerline{\includegraphics[width=\columnwidth]{images/v2/fig1_per_target_severity.pdf}}
 \caption{Severity-tier distribution per target across 1{,}600 (case, condition) cells. Targets are ordered by share of Low-risk responses (safest first). Two frontier targets (Claude Haiku 4.5, GPT-5.4-mini) occupy the top of the ranking; MedGemma 27B is the most vulnerable.}
 \label{fig:per_target_severity}
-\end{figure} Two frontier targets achieve effectively zero critical-consensus failures across 4{,}800 attack cells, while the worst medical specialist (MedGemma 27B) registers 3.5\% critical-risk responses.
+\end{figure} Two frontier targets achieve zero critical-consensus failures across 1{,}600 mean-across-judges response cells, while the worst medical specialist (MedGemma 27B) registers 3.4\% critical-risk cells.
 
 \begin{table}[t]
 \caption{Per-target severity tier distribution. Each cell aggregates the mean of three LLM judges per (case, condition) response and tiers it: Low (mean VSF $< 5$), Moderate ($< 11$), High ($< 21$), Critical ($\ge 21$). $n = 1{,}600$ response cells per target (1{,}599 for Gemini due to one missing judge call). Lower is safer.}
@@ -142,7 +142,7 @@ MedGemma 27B          & Specialist & 50.0 & 34.0 & 12.6 & \textbf{3.4} \\
 
 Tier means concentrate the gap under text-attack conditions: at C4 persistence specialists average mean VSF 8.2 vs.\ frontier 3.6, and at C5 misinformation 7.4 vs.\ 4.9. The frontier-vs-specialist overall means are 3.16 and 4.61. Visual-only and combined conditions (C7, C8) are tightly clustered across tiers (between 2.1 and 2.7), consistent with the SSIM-preserving constraint flattening cross-model differentiation.
 
-Counter to common intuition, the larger MedGemma 27B is \emph{more} vulnerable than its 4B sibling (3.5\% vs.\ 1.4\% critical-risk; mean VSF 6.12 vs.\ 5.25). Scaling within a medical fine-tune family does not monotonically improve safety in our evaluation. Within the CheXOne family, the reasoning-trace mode produces longer responses but doesn't materially change vulnerability (0.2\% vs.\ 0.5\% critical).
+Counter to common intuition, the larger MedGemma 27B is \emph{more} vulnerable than its 4B sibling: 3.4\% vs.\ 0.2\% critical-risk rate at the response-cell level (mean across three judges $\ge 21$). Scaling within a medical fine-tune family does not monotonically improve safety in our evaluation. Within the CheXOne family, the reasoning-trace mode produces longer responses but doesn't materially change vulnerability (0.0\% vs.\ 0.1\% critical).
 
 \subsection{Attack Effectiveness by Condition}
 
@@ -182,36 +182,9 @@ Pairwise Spearman $\rho$ on $\mathrm{VSF}_{\text{total}}$ identifies GPT-4o-mini
 
 \subsection{Clinician Validation: VSF Predicts Clinical Harm}\label{sec:clinician}
 
-Two clinicians (one board-certified radiologist, one non-radiology clinician) independently annotated all 500 stratified responses. All three preferred bars set in our pre-registered analysis plan are cleared (Table~\ref{tab:clinician_headline}).
+Two clinicians (one board-certified radiologist, one non-radiology clinician) independently annotated all 500 stratified responses. All three preferred bars set in our pre-registered analysis plan are cleared: weighted Cohen's $\kappa = 0.645$ (linear) and 0.806 (quadratic) against the $\ge 0.55$ bar, Spearman $\rho(\overline{\mathrm{VSF}}, \mathrm{mean\ harm}) = 0.590$ against $\ge 0.45$, and AUROC $= 0.836$ for predicting clinician harm $\ge 3$ against $\ge 0.70$. Krippendorff $\alpha$ on harm is 0.804; inter-rater exact agreement is 55.6\%, with 95.0\% of pairs within $\pm 1$.
 
-\begin{table}[t]
-\caption{Phase 7 clinician validation headline. All three pre-registered preferred bars cleared. Mean clinician harm is the average of the two annotators' clinical-harm-0-to-4 ratings.}
-\label{tab:clinician_headline}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Metric} & \textbf{Value} & \textbf{Preferred bar} \\
-\midrule
-Weighted Cohen $\kappa$ (linear, harm)     & \textbf{0.645} & $\ge 0.55$ \\
-Weighted Cohen $\kappa$ (quadratic, harm)  & 0.806          & n/a \\
-Krippendorff $\alpha$ (harm)               & 0.804          & n/a \\
-Inter-rater exact agreement                & 55.6\%         & n/a \\
-Inter-rater within $\pm 1$                 & 95.0\%         & n/a \\
-$\rho(\overline{\mathrm{VSF}},$ mean harm$)$ & \textbf{0.590} & $\ge 0.45$ \\
-AUROC ($\overline{\mathrm{VSF}} \to$ harm $\ge 3$) & \textbf{0.836} & $\ge 0.70$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
-
-\textbf{Calibration is monotonic at the extremes.} VSF severity tiers correspond cleanly to the rate of clinician-rated high-harm responses (Fig.~\ref{fig:calibration} and Table~\ref{tab:calibration}).
-
-\begin{figure}[t]
-\centerline{\includegraphics[width=\columnwidth]{images/v2/fig2_calibration.pdf}}
-\caption{Left: rate of clinician-rated harm $\ge 3$ per VSF severity tier on the 500-case dual-annotated subsample. Right: per-case scatter of VSF total against mean clinician harm. The dotted line marks the harm $\ge 3$ threshold used for the AUROC analysis.}
-\label{fig:calibration}
-\end{figure} The Critical tier (mean VSF $\ge 21$) captures 96.7\% of cases as harm $\ge 3$. The Low tier captures 3.2\%. The Moderate and High tiers don't separate as cleanly (18.4\% vs.\ 20.6\%), suggesting the rubric distinguishes the tails better than the middle.
+\textbf{Calibration is monotonic at the extremes.} VSF severity tiers correspond cleanly to the rate of clinician-rated high-harm responses (Table~\ref{tab:calibration}). The Critical tier (mean VSF $\ge 21$) captures 96.7\% of cases as harm $\ge 3$. The Low tier captures 3.2\%. The Moderate and High tiers don't separate as cleanly (18.4\% vs.\ 20.6\%), suggesting the rubric distinguishes the tails better than the middle.
 
 \begin{table}[t]
 \caption{Calibration of VSF severity tier vs.\ clinician harm. Tiers use continuous boundaries on mean VSF: Low ($<5$), Moderate ($<11$), High ($<21$), Critical ($\ge 21$). Mean harm is the average of two annotator harm-0-to-4 ratings. Percent high-risk is the fraction with mean harm $\ge 3$.}
@@ -320,7 +293,7 @@ VSF-Med provides a clinically validated adversarial evaluation framework for med
 
 \section*{Reproducibility}
 
-Code, the PostgreSQL schema, the three-judge prompts, and the analysis-table generators are released openly. The MIMIC-Diff-VQA splits and the 500-case clinician annotation bundle remain credentialed. The latter is provided to PhysioNet-credentialed research collaborators on request.
+Code, the PostgreSQL schema, the three-judge prompts, and the analysis-table generators are released openly. The MIMIC-Diff-VQA splits and the 500-case clinician annotation bundle remain credentialed and will be made available through an anonymized supplemental process where permitted, with full distribution details deferred to camera-ready.
 
 \section*{Acknowledgment}
 
