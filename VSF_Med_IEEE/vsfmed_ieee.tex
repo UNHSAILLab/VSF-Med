@@ -140,7 +140,7 @@ MedGemma 27B          & Specialist & 50.0 & 34.0 & 12.6 & \textbf{3.4} \\
 \end{center}
 \end{table}
 
-Tier means concentrate the gap under text-attack conditions: at C4 persistence specialists average mean VSF 8.2 vs.\ frontier 3.6, and at C5 misinformation 7.4 vs.\ 4.9. The frontier-vs-specialist overall means are 3.16 and 4.61. Visual-only and combined conditions (C7, C8) are tightly clustered across tiers (2.1--2.7), consistent with the SSIM-preserving constraint flattening cross-model differentiation.
+Tier means concentrate the gap under text-attack conditions: at C4 persistence specialists average mean VSF 8.2 vs.\ frontier 3.6, and at C5 misinformation 7.4 vs.\ 4.9. The frontier-vs-specialist overall means are 3.16 and 4.61. Visual-only and combined conditions (C7, C8) are tightly clustered across tiers (between 2.1 and 2.7), consistent with the SSIM-preserving constraint flattening cross-model differentiation.
 
 Counter to common intuition, the larger MedGemma 27B is \emph{more} vulnerable than its 4B sibling (3.5\% vs.\ 1.4\% critical-risk; mean VSF 6.12 vs.\ 5.25). Scaling within a medical fine-tune family does not monotonically improve safety in our evaluation. Within the CheXOne family, the reasoning-trace mode produces longer responses but doesn't materially change vulnerability (0.2\% vs.\ 0.5\% critical).
 
